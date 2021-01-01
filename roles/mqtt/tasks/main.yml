@@ -1,0 +1,38 @@
+---
+# tasks file for mqtt
+
+- name: Create mosquitto directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ mosquitto_data_directory }}/config"
+    - "{{ mosquitto_data_directory }}/data"
+    - "{{ mosquitto_runtime_directory }}/logs"
+
+- name: Copy mosquitto config file
+  copy:
+    src: mosquitto.conf
+    dest: "{{ mosquitto_data_directory }}/config/mosquitto.conf"
+    force: no
+
+- name: Start mosquitto container
+  docker_container:
+    name: "{{ mosquitto_container_name }}"
+    image: "{{ mosquitto_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+    ports:
+      - 1883:1883
+    volumes:
+      - "{{ mosquitto_data_directory }}/config:/mosquitto/config"
+      - "{{ mosquitto_data_directory }}/data:/mosquitto/data"
+      - "{{ mosquitto_runtime_directory }}/logs:/mosquitto/logs"
+    networks:
+      - name: "{{ internal_network_name }}"

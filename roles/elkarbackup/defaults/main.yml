@@ -1,0 +1,21 @@
+---
+# defaults file for elkarbackup
+
+elkarbackup_container_name: elkarbackup
+elkarbackup_container_image: "elkarbackup/elkarbackup:latest"
+elkarbackup_traefik_rule: "Host(`elkarbackup.{{ domain }}`)"
+elkarbackup_expose: "true"
+elkarbackup_runtime_directory: "{{ base_runtime_directory }}/elkarbackup"
+elkarbackup_data_directory: "{{ base_data_directory }}/elkarbackup"
+elkarbackup_uploads_directory: "{{ elkarbackup_data_directory }}/uploads"
+elkarbackup_ssh_directory: "{{ elkarbackup_data_directory }}/sshkeys"
+elkarbackup_backups_directory: "{{ elkarbackup_data_directory }}/backups"
+elkarbackup_mysql_root_password: "{{ lookup('password', 'credentials/elkarbackup/mysql_root_password length=64') }}"
+elkarbackup_network_name: elkarbackup
+elkarbackup_db_container_image: mariadb:10.4
+elkarbackup_basic_volumes:
+      - "{{ elkarbackup_uploads_directory }}:/app/uploads"
+      - "{{ elkarbackup_ssh_directory }}:/app/.ssh"
+      - "{{ elkarbackup_backups_directory }}:/app/backups"
+elkarbackup_extra_volumes: []
+elkarbackup_all_volumes: "{{ (elkarbackup_basic_volumes + elkarbackup_extra_volumes) | list }}"

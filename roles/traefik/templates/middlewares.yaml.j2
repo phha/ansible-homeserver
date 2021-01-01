@@ -1,0 +1,20 @@
+http:
+  middlewares:
+    fauth-auth:
+      forwardAuth:
+        address: "https://{{ boreale_container_name }}:4000"
+        tls:
+          insecureSkipVerify: true
+    frame-allow:
+      headers:
+        # customFrameOptionsValue: "allow-from https://organizr.{{ domain }}"
+        customFrameOptionsValue: "allow-from https://{{ domain }}"
+        customResponseHeaders:
+          contentSecurityPolicy: "frame ancestors https://*.{{ domain }}"
+    fauth:
+      chain:
+        middlewares:
+          - frame-allow
+          - fauth-auth
+
+# vim: set ft=yaml shiftwidth=2:

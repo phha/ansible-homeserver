@@ -1,0 +1,137 @@
+---
+# task file for nextcloud
+
+- name: Create nextcloud network
+  docker_network:
+    name: "{{ nextcloud_network_name }}"
+    internal: yes
+    driver: overlay
+    attachable: yes
+    state: present
+
+- name: Create nextcloud directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+  loop:
+    - "{{ nextcloud_runtime_directory }}/html"
+    - "{{ nextcloud_data_directory }}/apps"
+    - "{{ nextcloud_data_directory }}/config"
+    - "{{ nextcloud_storage_directory }}"
+
+- name: db and redis directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ nextcloud_runtime_directory }}/db"
+    - "{{ nextcloud_runtime_directory }}/redis"
+
+- name: nextcloud db docker container
+  docker_container:
+    name: "{{ nextcloud_container_name }}_db"
+    image: "{{ nextcloud_db_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      MYSQL_HOST: "{{ nextcloud_container_name }}_db"
+      MYSQL_ROOT_PASSWORD: "{{ nextcloud_mysql_root_password }}"
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: "{{ nextcloud_mysql_password }}"
+    volumes:
+      - "{{ nextcloud_runtime_directory }}/db:/var/lib/mysql"
+    networks:
+      - name: "{{ nextcloud_network_name }}"
+
+- name: nextcloud redis docker container
+  docker_container:
+    name: "{{ nextcloud_container_name }}_redis"
+    image: "{{ nextcloud_redis_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    volumes:
+      - "{{ nextcloud_runtime_directory }}/redis:/data"
+    networks:
+      - name: "{{ nextcloud_network_name }}"
+
+- name: nextcloud docker container
+  docker_container:
+    name: "{{ nextcloud_container_name }}"
+    image: "{{ nextcloud_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      NEXTCLOUD_ADMIN_USER: "{{ nextcloud_admin_user }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_admin_pass }}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "nextcloud.{{ domain }} localhost"
+      MYSQL_HOST: "{{ nextcloud_container_name }}_db"
+      MYSQL_ROOT_PASSWORD: "{{ nextcloud_mysql_root_password }}"
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: "{{ nextcloud_mysql_password }}"
+      REDIS_HOST_PASSWORD: foo
+    volumes: "{{ nextcloud_all_volumes }}"
+    labels:
+      traefik.enable: "{{ nextcloud_expose }}"
+      traefik.http.routers.nextcloud.tls: "true"
+      traefik.http.routers.nextcloud.rule: "{{ nextcloud_traefik_rule }}"
+      traefik.http.routers.nextcloud.tls.certresolver: letsencrypt
+      traefik.http.services.nextcloud.loadbalancer.server.port: "80"
+    networks:
+      - name: "{{ traefik_network_name }}"
+      - name: "{{ nextcloud_network_name }}"
+      - name: "{{ mail_network_name }}"
+      - name: "{{ internal_network_name }}"
+
+- name: nextcloud cron docker container
+  docker_container:
+    name: "{{ nextcloud_container_name }}_cron"
+    image: "{{ nextcloud_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      NEXTCLOUD_ADMIN_USER: "{{ nextcloud_admin_user }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_admin_pass }}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "nextcloud.{{ domain }} localhost"
+      MYSQL_HOST: "{{ nextcloud_container_name }}_db"
+      MYSQL_ROOT_PASSWORD: "{{ nextcloud_mysql_root_password }}"
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: "{{ nextcloud_mysql_password }}"
+    volumes: "{{ nextcloud_all_volumes }}"
+    user: www-data
+    networks:
+      - name: "{{ nextcloud_network_name }}"
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+        trap "break;exit" SIGHUP SIGINT SIGTERM
+        while [ ! -f /var/www/html/config/config.php ]; do
+          sleep 1
+        done
+        while true; do
+          php -f /var/www/html/cron.php
+          sleep 15m
+        done
+      EOF'

@@ -1,0 +1,4 @@
+dependencies:
+  - sabnzbd
+  - nzbhydra2
+  - calibre

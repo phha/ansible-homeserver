@@ -1,0 +1,37 @@
+---
+# tasks file for timemachine
+
+- name: Create timemachine directories
+  file:
+    path: "{{ timemachine_data_directory }}"
+    state: directory
+
+- name: Start timemachine container
+  docker_container:
+    name: "{{ timemachine_container_name }}"
+    image: "{{ timemachine_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      RELAY_MYHOSTNAME: "timemachine.{{ domain }}"
+      RELAY_MYDOMAIN: "{{ domain }}"
+      RELAY_MYNETWORKS: "{{ timemachine_subnet }}"
+      RELAY_HOST: "{{ timemachine_relay_host }}"
+      RELAY_LOGIN: "{{ timemachine_relay_user }}"
+      RELAY_PASSWORD: "{{ timemachine_relay_password }}"
+      RELAY_USE_TLS: "yes"
+      RELAY_TLS_CA: /ca-certificates.crt
+      RELAY_TLS_VERIFY: may
+      RELAY_MODE: ALLOW_NETAUTH_NODOMAIN
+      RELAY_POSTMASTER: "{{ timemachine_relay_postmaster }}"
+      RELAY_STRICT_SENDER_MYDOMAIN: "false"
+    volumes:
+      - "{{ timemachine_data_directory }}/data:/timemachine/data"
+      - /etc/ssl/certs/ca-certificates.crt:/ca-certificates.crt:ro
+    networks:
+      - name: "{{ timemachine_network_name }}"

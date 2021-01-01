@@ -1,0 +1,8 @@
+---
+# defaults file for nodered
+
+nodered_container_name: node-red
+nodered_container_image: "nodered/node-red:latest"
+nodered_traefik_rule: "Host(`node-red.{{ domain }}`)"
+nodered_expose: "true"
+nodered_data_directory: "{{ base_data_directory }}/nodered"

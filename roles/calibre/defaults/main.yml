@@ -1,0 +1,9 @@
+---
+# defaults file for calibre
+
+calibre_container_name: calibre
+calibre_container_image: "linuxserver/calibre"
+calibre_expose: "true"
+calibre_traefik_rule: "Host(`calibre.{{ domain }}`)"
+calibre_ui_traefik_rule: "Host(`calibre-ui.{{ domain }}`)"
+calibre_data_directory: "{{ base_data_directory }}/calibre"

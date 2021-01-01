@@ -1,0 +1,35 @@
+---
+# task file for guacamole
+
+- name: Create guacamole data directory
+  file:
+    path: "{{ guacamole_data_directory }}"
+    state: directory
+
+- name: guacamole docker container
+  docker_container:
+    name: "{{ guacamole_container_name }}"
+    image: "{{ guacamole_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ guacamole_data_directory }}:/config"
+      - "{{ media_series_directory }}:/series"
+      - "{{ shared_directory }}:/shared:ro"
+      - "{{ media_download_directory }}/complete/dronetv:/download"
+    labels:
+      traefik.enable: "{{ guacamole_expose }}"
+      traefik.http.routers.guacamole.tls: "true"
+      traefik.http.routers.guacamole.rule: "{{ guacamole_traefik_rule }}"
+      traefik.http.routers.guacamole.middlewares: fauth@file
+      traefik.http.routers.guacamole.tls.certresolver: letsencrypt
+      traefik.http.services.guacamole.loadbalancer.server.port: "8080"
+    networks:
+      - name: "{{ traefik_network_name }}"
+      - name: "{{ internal_network_name }}"

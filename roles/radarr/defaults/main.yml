@@ -1,0 +1,8 @@
+---
+# defaults file for radarr
+
+radarr_container_name: radarr
+radarr_container_image: "linuxserver/radarr:latest"
+radarr_traefik_rule: "Host(`radarr.{{ domain }}`)"
+radarr_expose: "true"
+radarr_data_directory: "{{ base_data_directory }}/radarr"

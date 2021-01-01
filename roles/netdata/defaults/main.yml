@@ -1,0 +1,8 @@
+---
+# defaults file for netdata
+
+netdata_container_name: netdata
+netdata_container_image: "netdata/netdata"
+netdata_traefik_rule: "Host(`netdata.{{ domain }}`)"
+netdata_expose: "true"
+netdata_data_directory: "{{ base_data_directory }}/netdata"

@@ -1,0 +1,9 @@
+---
+# Defaults for pihole
+
+pihole_data_directory: "{{ base_data_directory }}/pihole"
+pihole_runtime_directory: "{{ base_runtime_directory }}/pihole"
+pihole_container_name: pihole
+pihole_container_image: "pihole/pihole:latest"
+pihole_expose: "true"
+pihole_traefik_rule: "Host(`pihole.{{ domain }}`)"

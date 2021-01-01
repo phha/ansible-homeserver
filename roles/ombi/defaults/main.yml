@@ -1,0 +1,8 @@
+---
+# defaults file for ombi
+
+ombi_container_name: ombi
+ombi_container_image: "linuxserver/ombi:latest"
+ombi_traefik_rule: "Host(`ombi.{{ domain }}`)"
+ombi_expose: "true"
+ombi_data_directory: "{{ base_data_directory }}/ombi"

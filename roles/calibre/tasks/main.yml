@@ -1,0 +1,45 @@
+---
+# task file for calibre
+
+- name: Create calibre data directory
+  file:
+    path: "{{ calibre_data_directory }}"
+    state: directory
+
+- name: calibre docker container
+  docker_container:
+    name: "{{ calibre_container_name }}"
+    image: "{{ calibre_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      PUID: "{{ media_uid }}"
+      PGID: "{{ media_gid }}"
+      UMASK_SET: "022"
+      UMASK: "022"
+    volumes:
+      - "{{ calibre_data_directory }}:/config"
+      - "{{ media_books_directory }}:/books"
+    labels:
+      traefik.enable: "{{ calibre_expose }}"
+      traefik.http.routers.calibre.tls: "true"
+      traefik.http.routers.calibre.rule: "{{ calibre_traefik_rule }}"
+      traefik.http.routers.calibre.middlewares: fauth@file
+      traefik.http.routers.calibre.tls.certresolver: letsencrypt
+      traefik.http.routers.calibre.service: calibre
+      traefik.http.services.calibre.loadbalancer.server.port: "8080"
+      traefik.http.routers.calibre_ui.tls: "true"
+      traefik.http.routers.calibre_ui.rule: "{{ calibre_ui_traefik_rule }}"
+      traefik.http.routers.calibre_ui.middlewares: fauth@file
+      traefik.http.routers.calibre_ui.tls.certresolver: letsencrypt
+      traefik.http.routers.calibre_ui.service: calibre_ui
+      traefik.http.services.calibre_ui.loadbalancer.server.port: "8081"
+    networks:
+      - name: "{{ traefik_network_name }}"
+      - name: "{{ internal_network_name }}"
+      - name: "{{ mail_network_name }}"

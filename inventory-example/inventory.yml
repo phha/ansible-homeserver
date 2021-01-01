@@ -1,0 +1,9 @@
+all:
+  hosts:
+    ## Example when running from the same host
+    # localhost:
+    #   ansible_connection: local
+    #   ansible_host: localhost
+    ## Example when running from a remote machine
+    # remote-host:
+    #   ansible_host: 192.168.0.2

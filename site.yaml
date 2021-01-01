@@ -1,0 +1,133 @@
+---
+
+- hosts: all
+  become: true
+  roles:
+    - role: traefik
+      tags:
+        - traefik
+    - role: homeassistant
+      tags:
+        - homeassistant
+        - smarthome
+      when: (homeassistant_enabled | default(False))
+    - role: mqtt
+      tags:
+        - mqtt
+        - smarthome
+      when: (mqtt_enabled | default(False))
+    - role: zigbee
+      tags:
+        - zigbee
+        - smarthome
+      when: (zigbee_enabled | default(False))
+    - role: tvheadend
+      tags:
+        - media
+        - tvheadend
+      when: (tvheadend_enabled | default(False))
+    - role: pihole
+      tags:
+        - pihole
+      when: (pihole_enabled | default(False))
+    - role: portainer
+      tags:
+        - portainer
+      when: (portainer_enabled | default(False))
+    - role: sonarr
+      tags:
+        - sonarr
+        - autopirate
+        - media
+      when: (sonarr_enabled | default(False))
+    - role: radarr
+      tags:
+        - radarr
+        - autopirate
+        - media
+      when: (radarr_enabled | default(False))
+    - role: readarr
+      tags:
+        - readarr
+        - autopirate
+        - media
+        - books
+      when: (readarr_enabled | default(False))
+    - role: ombi
+      tags:
+        - ombi
+        - autopirate
+        - media
+      when: (ombi_enabled | default(False))
+    - role: calibre
+      tags:
+        - calibre
+        - media
+        - books
+      when: (calibre_enabled | default(False))
+    - role: calibre_web
+      tags:
+        - calibre_web
+        - media
+        - books
+      when: (calibre_web_enabled | default(False))
+    - role: paperless
+      tags:
+        - paperless
+        - productivity
+      when: (paperless_enabled | default(False))
+    - role: nodered
+      tags:
+        - nodered
+        - productivity
+        - smarthome
+      when: (nodered_enabled | default(False))
+    - role: guacamole
+      tags:
+        - guacamole
+        - productivity
+      when: (guacamole_enabled | default(False))
+    - role: nextcloud
+      tags:
+        - nextcloud
+        - productivity
+      when: (nextcloud_enabled | default(False))
+    - role: unmanic
+      tags:
+        - unmanic
+        - media
+      when: (unmanic_enabled | default(False))
+    - role: jellyfin
+      tags:
+        - jellyfin
+        - media
+      when: (jellyfin_enabled | default(False))
+    - role: influxdb
+      tags:
+        - influxdb
+        - grahping
+        - smarthome
+      when: (influxdb_enabled | default(False))
+    - role: grafana
+      tags:
+        - grafana
+        - grahping
+        - smarthome
+      when: (grafana_enabled | default(False))
+    - role: organizr
+      tags:
+        - organizr
+      when: (organizr_enabled | default(False))
+    - role: elkarbackup
+      tags:
+        - elkarbackup
+        - backup
+      when: (elkarbackup_enabled | default(False))
+    - role: netdata
+      tags:
+        - netdata
+      when: (netdata_enabled | default(False))
+    - role: mail
+      tags:
+        - mail
+      when: (mail_enabled | default(False))

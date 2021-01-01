@@ -1,0 +1,25 @@
+http:
+  routers:
+    {{ item.key }}:
+      {% if 'rule' in item.value %}
+      rule: {{ item.value.rule }}
+      {% else %}
+      rule: Host(`{{ item.key }}.{{ domain }}`)
+      {% endif %}
+      service: {{ item.key }}
+      middlewares:
+        {% if 'auth' in item.value and item.value.auth %}
+        - fauth@file
+        {% else %}
+        - frame-allow@file
+        {% endif %}
+      tls:
+        certResolver: letsencrypt
+  services:
+    {{ item.key }}:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: {{ item.value.url }}
+
+# vim: set ft=yaml shiftwidth=2:

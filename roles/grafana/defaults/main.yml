@@ -1,0 +1,11 @@
+---
+# defaults file for grafana
+
+grafana_container_name: grafana
+grafana_container_image: "grafana/grafana:latest"
+grafana_data_directory: "{{ base_data_directory }}/grafana"
+grafana_admin_user: admin
+grafana_admin_pass: "{{ lookup('password', 'credentials/grafana/admin_password length=64') }}"
+grafana_plugins: ""
+grafana_expose: "true"
+grafana_traefik_rule: "Host(`grafana.{{ domain }}`)"

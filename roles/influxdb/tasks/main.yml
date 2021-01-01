@@ -1,0 +1,60 @@
+---
+# task file for influxdb
+
+- name: influxdb directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ influxdb_data_directory }}/influxdb"
+    - "{{ influxdb_data_directory }}/chronograf"
+
+- name: influxdb docker container
+  docker_container:
+    name: "{{ influxdb_container_name }}"
+    image: "{{ influxdb_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    ports:
+      - 8088:8088
+      - 8086:8086
+    env:
+      TZ: "{{ timezone }}"
+      INFLUXDB_DB: series
+      INFLUXDB_ADMIN_USER: "{{ influxdb_admin_user }}"
+      INFLUXDB_ADMIN_PASSWORD: "{{ influxdb_admin_pass }}"
+    volumes:
+      - "{{ influxdb_data_directory }}/influxdb:/var/lib/influxdb"
+    networks:
+      - name: "{{ internal_network_name }}"
+
+- name: chronograf docker container
+  docker_container:
+    name: "{{ influxdb_chronograf_container_name }}"
+    image: "{{ influxdb_chronograf_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      INFLUXDB_USERNAME: "{{ influxdb_admin_user }}"
+      INFLUXDB_PASSWORD: "{{ influxdb_admin_pass }}"
+    volumes:
+      - "{{ influxdb_data_directory }}/chronograf:/var/lib/chronograf"
+    labels:
+      traefik.enable: "{{ influxdb_chronograf_expose }}"
+      traefik.http.routers.influxdb.tls: "true"
+      traefik.http.routers.influxdb.rule: "{{ influxdb_chronograf_traefik_rule }}"
+      traefik.http.routers.influxdb.tls.certresolver: letsencrypt
+      traefik.http.routers.influxdb.middlewares: frame-allow@file
+      traefik.http.services.influxdb.loadbalancer.server.port: "8888"
+    networks:
+      - name: "{{ internal_network_name }}"
+      - name: "{{ traefik_network_name }}"

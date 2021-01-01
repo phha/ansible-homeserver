@@ -1,0 +1,18 @@
+homeassistant: true
+permit_join: true
+mqtt:
+  base_topic: zigbee2mqtt
+  server: "mqtt://{{ mosquitto_container_name }}"
+serial:
+  port: "{{ zigbee_device }}"
+  disable_led: "{{ zigbee2mqtt_disable_led }}"
+advanced:
+  last_seen: ISO_8601_local
+frontend:
+  port: 2233
+experimental:
+  new_api: true
+devices: devices.yaml
+groups: groups.yaml
+
+# vim: set ft=yaml:

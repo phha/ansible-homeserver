@@ -1,0 +1,8 @@
+---
+# defaults file for calibre-web
+
+calibre_web_container_name: calibre-web
+calibre_web_container_image: "linuxserver/calibre-web:latest"
+calibre_web_traefik_rule: "Host(`calibre-web.{{ domain }}`)"
+calibre_web_expose: "true"
+calibre_web_data_directory: "{{ base_data_directory }}/calibre_web"

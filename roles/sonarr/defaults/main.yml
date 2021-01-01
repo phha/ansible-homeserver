@@ -1,0 +1,8 @@
+---
+# defaults file for sonarr
+
+sonarr_container_name: sonarr
+sonarr_container_image: "linuxserver/sonarr:preview"
+sonarr_traefik_rule: "Host(`sonarr.{{ domain }}`)"
+sonarr_expose: "true"
+sonarr_data_directory: "{{ base_data_directory }}/sonarr"

@@ -1,0 +1,8 @@
+---
+# defaults file for guacamole
+
+guacamole_container_name: guacamole
+guacamole_container_image: "oznu/guacamole:latest"
+guacamole_traefik_rule: "Host(`guacamole.{{ domain }}`)"
+guacamole_expose: "true"
+guacamole_data_directory: "{{ base_data_directory }}/guacamole"

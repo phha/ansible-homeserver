@@ -1,0 +1,37 @@
+---
+# tasks file for mail
+
+- name: Create mail directories
+  file:
+    path: "{{ mail_data_directory }}"
+    state: directory
+
+- name: Start mail container
+  docker_container:
+    name: "{{ mail_container_name }}"
+    image: "{{ mail_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      RELAY_MYHOSTNAME: "mail.{{ domain }}"
+      RELAY_MYDOMAIN: "{{ domain }}"
+      RELAY_MYNETWORKS: "{{ mail_subnet }}"
+      RELAY_HOST: "{{ mail_relay_host }}"
+      RELAY_LOGIN: "{{ mail_relay_user }}"
+      RELAY_PASSWORD: "{{ mail_relay_password }}"
+      RELAY_USE_TLS: "yes"
+      RELAY_TLS_CA: /ca-certificates.crt
+      RELAY_TLS_VERIFY: may
+      RELAY_MODE: ALLOW_NETAUTH_NODOMAIN
+      RELAY_POSTMASTER: "{{ mail_relay_postmaster }}"
+      RELAY_STRICT_SENDER_MYDOMAIN: "false"
+    volumes:
+      - "{{ mail_data_directory }}/data:/mail/data"
+      - /etc/ssl/certs/ca-certificates.crt:/ca-certificates.crt:ro
+    networks:
+      - name: "{{ mail_network_name }}"

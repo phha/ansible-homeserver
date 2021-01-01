@@ -1,0 +1,33 @@
+---
+# task file for nodered
+
+- name: Create nodered data directory
+  file:
+    path: "{{ nodered_data_directory }}"
+    state: directory
+
+- name: nodered docker container
+  docker_container:
+    name: "{{ nodered_container_name }}"
+    image: "{{ nodered_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ nodered_data_directory }}:/data"
+    labels:
+      traefik.enable: "{{ nodered_expose }}"
+      traefik.http.routers.nodered.tls: "true"
+      traefik.http.routers.nodered.rule: "{{ nodered_traefik_rule }}"
+      traefik.http.routers.nodered.middlewares: fauth@file
+      traefik.http.routers.nodered.tls.certresolver: letsencrypt
+      traefik.http.services.nodered.loadbalancer.server.port: "1880"
+    networks:
+      - name: "{{ traefik_network_name }}"
+      - name: "{{ internal_network_name }}"
+      - name: "{{ mail_network_name }}"

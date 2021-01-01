@@ -1,0 +1,38 @@
+---
+# task file for calibre_web
+
+- name: Create calibre_web data directory
+  file:
+    path: "{{ calibre_web_data_directory }}"
+    state: directory
+
+- name: calibre_web docker container
+  docker_container:
+    name: "{{ calibre_web_container_name }}"
+    image: "{{ calibre_web_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      PUID: "{{ media_uid }}"
+      PGID: "{{ media_gid }}"
+      DOCKER_MODS: linuxserver/calibre-web:calibre
+    volumes:
+      - "{{ calibre_web_data_directory }}:/config"
+      - "{{ media_books_directory }}:/books"
+      - "{{ shared_directory }}:/shared:ro"
+    labels:
+      traefik.enable: "{{ calibre_web_expose }}"
+      traefik.http.routers.calibre_web.tls: "true"
+      traefik.http.routers.calibre_web.rule: "{{ calibre_web_traefik_rule }}"
+      traefik.http.routers.calibre_web.middlewares: fauth@file
+      traefik.http.routers.calibre_web.tls.certresolver: letsencrypt
+      traefik.http.services.calibre_web.loadbalancer.server.port: "8083"
+    networks:
+      - name: "{{ traefik_network_name }}"
+      - name: "{{ internal_network_name }}"
+      - name: "{{ mail_network_name }}"

@@ -1,0 +1,5 @@
+dependencies:
+  - sabnzbd
+  - nzbhydra2
+  - traefik
+  - docker

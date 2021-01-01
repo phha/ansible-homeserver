@@ -1,0 +1,69 @@
+---
+# task file for elkarbackup
+
+- name: Create elkarbackup network
+  docker_network:
+    name: "{{ elkarbackup_network_name }}"
+    internal: yes
+    driver: overlay
+    attachable: yes
+    state: present
+
+- name: Create elkarbackup directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ elkarbackup_runtime_directory }}/db"
+    - "{{ elkarbackup_uploads_directory }}"
+    - "{{ elkarbackup_ssh_directory }}"
+    - "{{ elkarbackup_backups_directory }}"
+
+- name: elkarbackup db docker container
+  docker_container:
+    name: "{{ elkarbackup_container_name }}_db"
+    image: "{{ elkarbackup_db_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      MYSQL_ROOT_PASSWORD: "{{ elkarbackup_mysql_root_password }}"
+    volumes:
+      - "{{ elkarbackup_runtime_directory }}/db:/var/lib/mysql"
+    networks:
+      - name: "{{ elkarbackup_network_name }}"
+
+- name: elkarbackup docker container
+  docker_container:
+    name: "{{ elkarbackup_container_name }}"
+    image: "{{ elkarbackup_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      PHP_TZ: "{{ timezone }}"
+      SYMFONY__MAILER__HOST: mail
+      SYMFONY__MAILER__FROM: "{{ email_address }}"
+      SYMFONY__DATABASE__HOST: "{{ elkarbackup_container_name }}_db"
+      SYMFONY__DATABASE__PASSWORD: "{{ elkarbackup_mysql_root_password }}"
+      EB_CRON: enabled
+    volumes: "{{ elkarbackup_all_volumes }}"
+    labels:
+      traefik.enable: "{{ elkarbackup_expose }}"
+      traefik.http.routers.elkarbackup.tls: "true"
+      traefik.http.routers.elkarbackup.rule: "{{ elkarbackup_traefik_rule }}"
+      traefik.http.routers.elkarbackup.tls.certresolver: letsencrypt
+      traefik.http.services.elkarbackup.loadbalancer.server.port: "80"
+    networks:
+      - name: "{{ traefik_network_name }}"
+      - name: "{{ elkarbackup_network_name }}"
+      - name: "{{ mail_network_name }}"
+      - name: "{{ internal_network_name }}"

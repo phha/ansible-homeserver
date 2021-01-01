@@ -1,0 +1,58 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+log:
+  level: "{{ traefik_log_level }}"
+
+serversTransport:
+  insecureSkipVerify: true
+
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: web-secure
+          scheme: https
+          permanent: true
+  web-secure:
+    address: :443
+    http:
+      tls:
+        certresolver: letsencrypt
+        domains:
+          main: "{{ domain }}"
+          sans:
+            - "*.{{ domain }}"
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "{{ letsencrypt_email_address }}"
+      storage: acme.json
+      # tlsChallenge: {}
+      # httpChallenge:
+      #   entryPoint: web
+      dnsChallenge:
+        provider: duckdns
+        resolvers:
+          - 1.1.1.1:53
+          - 8.8.8.8:53
+        delayBeforeCheck: 3
+
+api:
+  insecure: true
+  dashboard: true
+
+providers:
+  docker:
+    endpoint: "unix://{{ docker_socket_path }}"
+    watch: true
+    exposedByDefault: false
+  file:
+    watch: true
+    directory: /rules.d
+
+# vim: set ft=yaml shiftwidth=2:

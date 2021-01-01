@@ -1,0 +1,21 @@
+---
+# defaults file for traefik
+
+duckdns_container_name: duckdns
+duckdns_container_image: "linuxserver/duckdns:latest"
+
+boreale_container_name: boreale
+boreale_container_image: "phha/boreale:latest"
+boreale_page_title: Authentication
+boreale_data_directory: "{{ base_data_directory }}/boreale"
+
+traefik_container_name: traefik
+traefik_container_image: "traefik:latest"
+traefik_data_directory: "{{ base_data_directory }}/traefik"
+traefik_log_level: INFO
+traefik_network_name: traefik_public
+traefik_expose: "true"
+
+letsencrypt_email_address: "{{ email_address }}"
+
+extra_routes: {}

@@ -1,0 +1,176 @@
+---
+
+# Example variable file. Copy the entire "inventories-example" folder to
+# "inventory/" and edit as needed.
+# This example file only contains variables that absolutely need to be set or
+# that are common overrides. However ,there are many more variables that are already
+# set to sensible defaults. Should you want to override these variables, you
+# can do so here as well. Please take a look into the defaults folder of the
+# individual roles for available vars.
+
+# Common
+timezone: Europe/Berlin
+base_data_directory: /srv/docker/data
+base_runtime_directory: /srv/docker/runtime
+shared_directory: /srv/docker/shared
+
+# Common Networking
+host_ip: 192.168.0.2
+domain: my-domain.duckdns.org
+email_address: my-email@gmail.com
+duckdns_token: Improve-Craving-Clumsy-Disobey
+boreale_users:
+  - username: my_first_user
+    password: Mushiness-Stylishly-Wieldable-Aftermath
+  - username: my_second_user
+    password: Sermon-Enrage-Overprice-Steerable
+
+# Extra routes
+extra_routes:
+  my-home-router:
+    url: https://192.168.0.1
+    auth: true # optional default true
+    rule: "Host(`router.{{ domain }}`)" # optional default <key>.<domain>
+  my-other-web-server:
+    url: http://192.168.2.94:80
+
+# mail
+mail_enabled: true
+mail_relay_host: "[smtp.gmail.com]:587"
+mail_relay_user: {{ email_address }}
+mail_relay_password: Nanny-Reassign-Snowbound-Strep
+
+# Common Media
+media_download_directory: /mnt/storage/downloads
+media_nzb_watch_directory: /mnt/storage/public/nzb
+media_series_directory: /mnt/storage/series
+media_movies_directory: /mnt/storage/movies
+media_books_directory: /mnt/storage/books
+media_audiobooks_directory: /mnt/storage/audiobooks
+media_magazines_directory: /mnt/storage/magazines
+media_comics_directory: /mnt/storage/comics
+media_uid: "110"
+media_gid: "1001"
+
+# Home Assistant
+homeassistant_enabled: true
+
+# Node-Red
+nodered_enabled: true
+
+# Zigbee
+zigbee_enabled: true
+zigbee_device: /dev/ttyACM0
+
+# TVHeadend
+tvheadend_enabled: true
+tvheadend_recordings_directory: /mnt/storage/recordings
+tvheadend_timeshift_directory: /mnt/storage/timeshift
+tvheadend_tvicons_directory: /mnt/storage/tvicons
+tvheadend_uid: "108"
+tvheadend_pid: "112"
+
+# pihole
+pihole_enabled: true
+pihole_password: Amid-Refining-Pretext-Acrobat
+pihole_extra_hosts:
+  home.router: 192.168.0.1
+  some-host.local: 192.168.0.2
+
+# portainer
+portainer_enabled: true
+portainer_admin_password: Smooth-Pacific-Tractor-Monsoon
+
+# sonarr
+sonarr_enabled: true
+
+# radarr
+radarr_enabled: true
+
+# readarr
+readarr_enabled: true
+
+# ombi
+ombi_enabled: true
+
+# calibre_web
+calibre_web_enabled: true
+
+# calibre
+calibre_enabled: true
+
+# paperless
+paperless_enabled: true
+paperless_consume_mail_host: imap.gmail.com
+paperless_consume_mail_port: "993"
+paperless_consume_mail_user: my-paperless-consumer-address@gmail.com
+paperless_consume_mail_pass: Celery-Vagrantly-Shawl-Parmesan
+# Only consume emails when they contain this secret
+paperless_consume_email_secret: Gallows-Divorcee-Monitor-Equator
+# Default- and supported OCR languages
+paperless_ocr_language: deu
+paperless_ocr_languages: deu eng
+# User and group IDs
+paperless_uid: "111"
+paperless_gid: "115"
+# Directories
+paperless_consume_directory: /mnt/storage/paperless/consume
+paperless_data_directory: "{{ base_data_directory }}/paperless"
+paperless_export_directory: "{{ paperless_data_directory }}/export"
+
+# guacamole
+guacamole_enabled: true
+
+# nextcloud
+nextcloud_enabled: true
+nextcloud_admin_user: admin
+nextcloud_admin_pass: Linked-Transform-Antitrust-Reissue
+nextcloud_storage_directory: /mnt/storage/nextcloud
+nextcloud_extra_volumes:
+  - "/some/dir:/external/Documents"
+  - "{{ tvheadend_recordings_directory }}:/external/recordings:ro"
+  - "{{ media_series_directory }}:/external/series:ro"
+  - "{{ media_movies_directory }}:/external/movies:ro"
+  - "{{ media_books_directory }}:/external/books:ro"
+  - "{{ media_audiobooks_directory }}:/external/audiobooks:ro"
+  - "{{ media_magazines_directory }}:/external/magazines:ro"
+  - "{{ media_comics_directory }}:/external/comics:ro"
+  - "{{ paperless_export_directory }}:/external/paperless:ro"
+  - "{{ shared_directory }}:/external/shared:rw"
+
+# unmanic
+unmanic_enabled: true
+
+# jellyfin
+jellyfin_enabled: true
+
+# influxdb
+influxdb_enabled: true
+
+# grafana
+grafana_enabled: true
+grafana_plugins: neocat-cal-heatmap-panel,snuids-trafficlights-panel,natel-discrete-panel,natel-plotly-panel
+
+# organizr
+organizr_enabled: true
+
+# elkarbackup
+elkarbackup_enabled: true
+elkarbackup_backups_directory: /mnt/storage/elkarbackup
+elkarbackup_mysql_root_password: Wharf-Renovator-Astronomy-Cinch
+elkarbackup_extra_volumes:
+  - "{{ media_series_directory }}:/sources/media/series:ro"
+  - "{{ media_movies_directory }}:/sources/media/movies:ro"
+  - "{{ media_books_directory }}:/sources/media/books:ro"
+  - "{{ media_audiobooks_directory }}:/sources/media/audiobooks:ro"
+  - "{{ media_magazines_directory }}:/sources/media/magazines:ro"
+  - "{{ media_comics_directory }}:/sources/media/comics:ro"
+  - "{{ paperless_export_directory }}:/sources/paperless:ro"
+
+# netdata
+netdata_enabled: true
+
+# Defaults
+docker_socket_path: /var/run/docker.sock
+ansible_python_interpreter: /usr/bin/python3
+docker_bridge_ip: 172.18.0.1

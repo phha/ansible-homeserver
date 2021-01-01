@@ -1,0 +1,51 @@
+---
+# task file for jellyfin
+
+- name: jellyfin directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ media_uid }}"
+    group: "{{ media_gid }}"
+  loop:
+    - "{{ jellyfin_runtime_directory }}/cache"
+    - "{{ jellyfin_runtime_directory }}/log"
+    - "{{ jellyfin_runtime_directory }}/metadata"
+    - "{{ jellyfin_runtime_directory }}/transcoding-temp"
+    - "{{ jellyfin_data_directory }}"
+    - "{{ media_movies_directory }}"
+    - "{{ media_series_directory }}"
+
+- name: jellyfin docker container
+  docker_container:
+    name: "{{ jellyfin_container_name }}"
+    image: "{{ jellyfin_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      PUID: "{{ media_uid }}"
+      PGID: "{{ media_gid }}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - "{{ jellyfin_runtime_directory }}/cache:/cache"
+      - "{{ jellyfin_runtime_directory }}/log:/config/log"
+      - "{{ jellyfin_runtime_directory }}/metadata:/config/metadata"
+      - "{{ jellyfin_runtime_directory }}/transcoding-temp:/config/tanscoding-temp"
+      - "{{ jellyfin_data_directory }}:/config"
+      - "{{ media_movies_directory }}:/mnt/library/Movies:ro"
+      - "{{ media_series_directory }}:/mnt/library/Series:ro"
+    labels:
+      traefik.enable: "{{ jellyfin_expose }}"
+      traefik.http.routers.jellyfin.tls: "true"
+      traefik.http.routers.jellyfin.rule: "{{ jellyfin_traefik_rule }}"
+      traefik.http.routers.jellyfin.tls.certresolver: letsencrypt
+      traefik.http.services.jellyfin.loadbalancer.server.port: "8096"
+    networks:
+      - name: "{{ traefik_network_name }}"
+      - name: "{{ mail_network_name }}"
+      - name: "{{ internal_network_name }}"

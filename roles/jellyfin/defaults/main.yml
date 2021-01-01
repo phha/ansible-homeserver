@@ -1,0 +1,9 @@
+---
+# defaults file for jellyfin
+
+jellyfin_container_name: jellyfin
+jellyfin_container_image: "jellyfin/jellyfin:latest"
+jellyfin_traefik_rule: "Host(`jellyfin.{{ domain }}`)"
+jellyfin_expose: "true"
+jellyfin_data_directory: "{{ base_data_directory }}/jellyfin"
+jellyfin_runtime_directory: "{{ base_runtime_directory }}/jellyfin"

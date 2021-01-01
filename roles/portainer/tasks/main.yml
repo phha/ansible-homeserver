@@ -1,0 +1,40 @@
+---
+# task file for portainer
+
+- name: Create portainer config directory
+  file:
+    path: "{{ portainer_data_directory }}/config"
+    state: directory
+
+- name: Portainer admin password
+  template:
+    src: admin-password.j2
+    dest: "{{ portainer_data_directory }}/admin-password"
+    mode: 0400
+
+- name: Portainer Docker Container
+  docker_container:
+    name: "{{ portainer_container_name }}"
+    image: "{{ portainer_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: unless-stopped
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    volumes:
+      - "{{ docker_socket_path }}:/var/run/docker.sock"
+      - "{{ portainer_data_directory }}/config:/data"
+      - "{{ portainer_data_directory }}/admin-password:/tmp/admin-password:ro"
+    labels:
+      traefik.enable: "{{ portainer_expose }}"
+      traefik.http.routers.portainer.tls: "true"
+      traefik.http.routers.portainer.rule: "{{ portainer_traefik_rule }}"
+      traefik.http.routers.portainer.tls.certresolver: letsencrypt
+      traefik.http.services.portainer.loadbalancer.server.port: "9000"
+    networks:
+      - name: "{{ traefik_network_name }}"
+        aliases:
+          - "{{ traefik_container_name }}"
+      - name: "{{ internal_network_name }}"
+    command: "-H unix://{{ docker_socket_path }} --admin-password-file /tmp/admin-password"

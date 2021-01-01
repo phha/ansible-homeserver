@@ -1,0 +1,8 @@
+---
+# defaults file for readarr
+
+readarr_container_name: readarr
+readarr_container_image: "hotio/readarr:nightly"
+readarr_traefik_rule: "Host(`readarr.{{ domain }}`)"
+readarr_expose: "true"
+readarr_data_directory: "{{ base_data_directory }}/readarr"

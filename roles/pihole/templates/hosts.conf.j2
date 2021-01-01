@@ -1,0 +1,4 @@
+address=/{{ domain }}/{{ host_ip }}
+{% for hostname, ip in pihole_extra_hosts.items() %}
+address=/{{ hostname }}/{{ ip }}
+{% endfor %}
