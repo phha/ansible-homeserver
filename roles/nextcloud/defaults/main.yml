@@ -20,3 +20,4 @@ nextcloud_basic_volumes:
       - "{{ nextcloud_storage_directory }}:/var/www/html/data"
 nextcloud_extra_volumes: []
 nextcloud_all_volumes: "{{ (nextcloud_basic_volumes + nextcloud_extra_volumes) | list }}"
+nextcloud_db_backup_enabled: "{{ db_backups_enabled }}"

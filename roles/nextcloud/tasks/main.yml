@@ -135,3 +135,10 @@
           sleep 15m
         done
       EOF'
+
+- name: db backup
+  include_role:
+    name: mysql_backup
+  vars:
+    mysql_backup_password: "{{ nextcloud_mysql_root_password }}"
+  when: nextcloud_db_backup_enabled
