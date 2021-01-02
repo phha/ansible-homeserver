@@ -14,6 +14,11 @@ base_data_directory: /srv/docker/data
 base_runtime_directory: /srv/docker/runtime
 shared_directory: /srv/docker/shared
 
+# Backups
+db_backups_directory: /srv/docker/backups/db
+db_backups_enabled: true
+db_backups_cron: "0 21 * * *" # UTC
+
 # Common Networking
 host_ip: 192.168.0.2
 domain: my-domain.duckdns.org
@@ -174,3 +179,4 @@ netdata_enabled: true
 docker_socket_path: /var/run/docker.sock
 ansible_python_interpreter: /usr/bin/python3
 docker_bridge_ip: 172.18.0.1
+mysql_backup_container_image: databack/mysql-backup:latest

@@ -1,7 +1,8 @@
+
 ---
 # task file for elkarbackup
 
-- name: Create elkarbackup network
+- name: network
   docker_network:
     name: "{{ elkarbackup_network_name }}"
     internal: yes
@@ -9,25 +10,25 @@
     attachable: yes
     state: present
 
-- name: Create elkarbackup directories
+- name: directories
   file:
     path: "{{ item }}"
     state: directory
   loop:
-    - "{{ elkarbackup_runtime_directory }}/db"
+    - "{{ elkarbackup_db_directory }}"
     - "{{ elkarbackup_uploads_directory }}"
     - "{{ elkarbackup_ssh_directory }}"
     - "{{ elkarbackup_backups_directory }}"
 
-- name: elkarbackup db docker container
+- name: db docker container
   docker_container:
-    name: "{{ elkarbackup_container_name }}_db"
+    name: "{{ elkarbackup_db_container_name }}"
     image: "{{ elkarbackup_db_container_image }}"
     recreate: true
     state: started
     container_default_behavior: no_defaults
     networks_cli_compatible: no
-    restart_policy: unless-stopped
+    restart_policy: "{{ elkarbackup_db_container_restart_policy }}"
     pull: "{{ 'upgrade' in ansible_run_tags }}"
     env:
       TZ: "{{ timezone }}"
@@ -37,7 +38,7 @@
     networks:
       - name: "{{ elkarbackup_network_name }}"
 
-- name: elkarbackup docker container
+- name: docker container
   docker_container:
     name: "{{ elkarbackup_container_name }}"
     image: "{{ elkarbackup_container_image }}"
@@ -67,3 +68,10 @@
       - name: "{{ elkarbackup_network_name }}"
       - name: "{{ mail_network_name }}"
       - name: "{{ internal_network_name }}"
+
+- name: db backup
+  include_role:
+    name: mysql_backup
+  vars:
+    mysql_backup_password: "{{ elkarbackup_mysql_root_password }}"
+  when: elkarbackup_db_backup_enabled
