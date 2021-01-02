@@ -1,0 +1,14 @@
+---
+# Defaults file for mysql_backup
+
+mysql_backup_target_script: "{{ base_runtime_directory }}/common/target.sh"
+mysql_backup_container_image: "databack/mysql-backup:latest"
+mysql_backup_container_name: "{{ ansible_parent_role_names | first }}_db_backup"
+mysql_backup_server: "{{ ansible_parent_role_names | first }}_db"
+mysql_backup_network_name: "{{ ansible_parent_role_names | first }}"
+mysql_backup_directory: "{{ db_backups_directory }}"
+mysql_backup_container_restart_policy: unless-stopped
+mysql_backup_cron: "{{ db_backups_cron }}"
+mysql_backup_nice: "true"
+mysql_backup_user: root
+mysql_backup_file_name: "{{ ansible_parent_role_names | first }}"
