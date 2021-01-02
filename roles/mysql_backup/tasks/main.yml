@@ -11,11 +11,6 @@
     path: "{{ mysql_backup_target_script | dirname }}"
     state: directory
 
-- name: mysql backup target script file
-  file:
-    path: "{{ mysql_backup_target_script }}"
-    state: touch
-
 - name: mysql backup target script template
   template:
     src: templates/mysql_backup_target.sh.j2
@@ -37,7 +32,7 @@
       DB_SERVER: "{{ mysql_backup_server }}"
       DB_USER: "{{ mysql_backup_user }}"
       DB_PASS: "{{ mysql_backup_password }}"
-      DB_DUMP_CRON: "{{ mysql_backup_cron }}"
+      # DB_DUMP_CRON: "{{ mysql_backup_cron }}"
       DB_DUMP_TARGET: /backups 
       NICE: "{{ mysql_backup_nice }}"
     user: "0"
