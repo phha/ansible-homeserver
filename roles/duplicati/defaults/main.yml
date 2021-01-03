@@ -1,0 +1,16 @@
+duplicati_container_name: duplicati
+duplicati_container_image: linuxserver/duplicati:latest
+duplicati_restart_policy: unless-stopped
+duplicati_pid: "0"
+duplicati_gid: "0"
+duplicati_expose: "true"
+duplicati_traefik_rule: "Host(`duplicati.{{ domain }}`)"
+duplicati_data_directory: "{{ base_data_directory }}/duplicati"
+duplicati_backups_directory: "{{ base_runtime_directory }}/duplicati"
+duplicati_extra_volumes: []
+duplicati_basic_volumes:
+  - "{{ duplicati_data_directory }}:/config"
+  - "{{ duplicati_backups_directory }}:/backups"
+  - "{{ base_data_directory }}:/source/docker/data:ro"
+  - "{{ db_backups_directory }}:/source/docker/db:ro"
+duplicati_all_volumes: "{{ (duplicati_basic_volumes + duplicati_extra_volumes) | list }}"

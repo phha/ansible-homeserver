@@ -14,6 +14,16 @@ base_data_directory: /srv/docker/data
 base_runtime_directory: /srv/docker/runtime
 shared_directory: /srv/docker/shared
 
+# Backups
+db_backups_enabled: true
+db_backups_directory: /srv/docker/backups/db
+db_backups_cron: "0 21 * * *" # UTC
+duplicati_enabled: true
+duplicati_extra_volumes:
+  - "/home/myuser:/source/myuser:ro"
+  - "{{ media_books_directory }}:/source/books:ro"
+  - "{{ paperless_export_directory }}:/source/documents:ro"
+
 # Common Networking
 host_ip: 192.168.0.2
 domain: my-domain.duckdns.org
@@ -157,7 +167,6 @@ organizr_enabled: true
 # elkarbackup
 elkarbackup_enabled: true
 elkarbackup_backups_directory: /mnt/storage/elkarbackup
-elkarbackup_mysql_root_password: Wharf-Renovator-Astronomy-Cinch
 elkarbackup_extra_volumes:
   - "{{ media_series_directory }}:/sources/media/series:ro"
   - "{{ media_movies_directory }}:/sources/media/movies:ro"
@@ -174,3 +183,4 @@ netdata_enabled: true
 docker_socket_path: /var/run/docker.sock
 ansible_python_interpreter: /usr/bin/python3
 docker_bridge_ip: 172.18.0.1
+mysql_backup_container_image: databack/mysql-backup:latest
