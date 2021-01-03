@@ -53,7 +53,7 @@
       PHP_TZ: "{{ timezone }}"
       SYMFONY__MAILER__HOST: mail
       SYMFONY__MAILER__FROM: "{{ email_address }}"
-      SYMFONY__DATABASE__HOST: "{{ elkarbackup_container_name }}_db"
+      SYMFONY__DATABASE__HOST: "{{ elkarbackup_db_container_name }}"
       SYMFONY__DATABASE__PASSWORD: "{{ elkarbackup_mysql_root_password }}"
       EB_CRON: enabled
     volumes: "{{ elkarbackup_all_volumes }}"
