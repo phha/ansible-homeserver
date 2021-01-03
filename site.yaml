@@ -127,6 +127,10 @@
       tags:
         - netdata
       when: (netdata_enabled | default(False))
+    - role: duplicati
+      tags:
+        - duplicati
+      when: (duplicati_enabled | default(False))
     - role: mail
       tags:
         - mail
