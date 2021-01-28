@@ -13,6 +13,8 @@ paperless_ocr_languages: deu eng
 paperless_ocr_threads: "1"
 paperless_uid: "0"
 paperless_gid: "0"
+paperless_export_uid: "{{ paperless_uid }}"
+paperless_export_gid: "{{ paperless_gid }}"
 paperless_export_enabled: true
 paperless_export_sleep: 1d
 paperless_forgiving_ocr: "true"

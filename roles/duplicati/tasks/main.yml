@@ -9,6 +9,7 @@
     - "{{ base_data_directory }}"
     - "{{ duplicati_data_directory }}"
     - "{{ duplicati_backups_directory }}"
+    - "{{ duplicati_temporary_directory }}"
     - "{{ db_backups_directory }}"
 
 - name: docker container

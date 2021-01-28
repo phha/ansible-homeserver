@@ -5,6 +5,8 @@
   file:
     path: "{{ item }}"
     state: directory
+    owner: "{{ paperless_uid }}"
+    group: "{{ paperless_gid }}"
   loop:
     - "{{ paperless_data_directory }}/data"
     - "{{ paperless_data_directory }}/media"
@@ -15,6 +17,8 @@
   file:
     path: "{{ paperless_export_directory }}"
     state: directory
+    owner: "{{ paperless_export_uid }}"
+    group: "{{ paperless_export_gid }}"
 
 - name: paperless docker container
   docker_container:
@@ -79,7 +83,7 @@
       - name: "{{ internal_network_name }}"
 
 - name: paperless exporter
-  when: (paperless_export_enabled | default(False))
+  when: (paperless_export_enabled)
   docker_container:
     name: "{{ paperless_container_name }}_exporter"
     image: "{{ paperless_container_image }}"
@@ -87,8 +91,8 @@
         bash -c 'bash -s <<EOF
         trap "break;exit" SIGHUP SIGINT SIGTERM
         while /bin/true; do
-            sleep $PAPERLESS_EXPORT_SLEEP
             /usr/src/paperless/src/manage.py document_exporter /export
+            sleep $PAPERLESS_EXPORT_SLEEP
         done
         EOF'
     recreate: true
@@ -99,8 +103,8 @@
     pull: "{{ 'upgrade' in ansible_run_tags }}"
     env:
       TZ: "{{ timezone }}"
-      USERMAP_UID: "{{ paperless_uid }}"
-      USERMAP_GID: "{{ paperless_gid }}"
+      USERMAP_UID: "{{ paperless_export_uid }}"
+      USERMAP_GID: "{{ paperless_export_gid }}"
       PAPERLESS_EXPORT_SLEEP: "{{ paperless_export_sleep }}"
     volumes:
       - "{{ paperless_data_directory }}/data:/usr/src/paperless/data"
