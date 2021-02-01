@@ -47,7 +47,7 @@ extra_routes:
 # mail
 mail_enabled: true
 mail_relay_host: "[smtp.gmail.com]:587"
-mail_relay_user: {{ email_address }}
+mail_relay_user: "{{ email_address }}"
 mail_relay_password: Nanny-Reassign-Snowbound-Strep
 
 # Common Media

@@ -4,8 +4,6 @@
 - name: Create nextcloud network
   docker_network:
     name: "{{ nextcloud_network_name }}"
-    internal: yes
-    driver: overlay
     attachable: yes
     state: present
 

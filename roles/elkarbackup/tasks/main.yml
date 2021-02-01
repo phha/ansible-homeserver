@@ -5,8 +5,6 @@
 - name: network
   docker_network:
     name: "{{ elkarbackup_network_name }}"
-    internal: yes
-    driver: overlay
     attachable: yes
     state: present
 

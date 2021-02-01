@@ -4,8 +4,6 @@
 - name: network
   docker_network:
     name: "{{ traefik_network_name }}"
-    internal: no
-    driver: overlay
     attachable: yes
     state: present
 
@@ -51,6 +49,12 @@
       - "{{ boreale_data_directory }}:/opt/app/data"
     networks:
       - name: "{{ internal_network_name }}"
+
+- name: wait for boreale
+  pause:
+    seconds: 10
+  when: ansible_facts['lsb']['id'] == 'Raspbian'
+
 
 - name: boreale users
   expect:

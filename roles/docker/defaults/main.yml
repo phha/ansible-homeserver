@@ -1,6 +1,6 @@
 ---
 # defaults file for docker
-linux_distribution: "{{ ansible_facts['distribution']|lower }}"
+linux_distribution: "{{ ansible_facts['lsb']['id']|lower }}"
 linux_release: "{{ ansible_facts['distribution_release'] }}"
 internal_network_name: internal
 mail_network_name: mail
