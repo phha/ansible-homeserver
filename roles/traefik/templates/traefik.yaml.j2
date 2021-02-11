@@ -51,6 +51,7 @@ providers:
     endpoint: "unix://{{ docker_socket_path }}"
     watch: true
     exposedByDefault: false
+    network: "{{ traefik_network_name }}"
   file:
     watch: true
     directory: /rules.d
