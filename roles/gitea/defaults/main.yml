@@ -1,0 +1,30 @@
+---
+# defaults file for gitea
+
+gitea_container_name: gitea
+gitea_container_image: "gitea/gitea:1"
+gitea_traefik_rule: "Host(`gitea.{{ domain }}`)"
+gitea_expose: "true"
+gitea_data_directory: "{{ base_data_directory }}/gitea"
+gitea_log_directory: "{{ base_runtime_directory }}/gitea/log"
+gitea_network_name: gitea
+gitea_restart_policy: unless-stopped
+gitea_mysql_root_password: "{{ lookup('password', 'credentials/gitea/mysql_root_password length=64') }}"
+gitea_db_password: "{{ lookup('password', 'credentials/gitea/db_password length=64') }}"
+gitea_uid: "5451"
+gitea_gid: "5451"
+gitea_run_mode: prod
+gitea_domain: "gitea.{{ domain }}"
+gitea_ssh_domain: "gitea.{{ domain }}"
+gitea_root_url: "https://gitea.{{ domain }}"
+gitea_app_name: "Gitea: Git with a cup of tea"
+gitea_ssh_port: "1222"
+gitea_lfs: "false"
+gitea_disable_registration: "true"
+gitea_require_signin: "true"
+
+gitea_db_container_image: mariadb:10.4
+gitea_db_container_name: "{{ gitea_container_name }}_db"
+gitea_db_directory: "{{ base_runtime_directory }}/gitea/db"
+gitea_db_container_restart_policy: unless-stopped
+gitea_db_backup_enabled: "{{ db_backups_enabled | bool }}"

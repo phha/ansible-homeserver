@@ -131,6 +131,10 @@
       tags:
         - duplicati
       when: (duplicati_enabled | default(False))
+    - role: gitea
+      tags:
+        - gitea
+      when: (gitea_enabled | default(False))
     - role: mail
       tags:
         - mail

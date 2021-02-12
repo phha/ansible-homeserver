@@ -179,6 +179,14 @@ elkarbackup_extra_volumes:
 # netdata
 netdata_enabled: true
 
+# Gitea
+gitea_enabled: true
+gitea_app_name: "Gitea: Git with a cup of tea"
+gitea_ssh_port: "1222"
+gitea_lfs: "false"
+gitea_disable_registration: "true"
+gitea_require_signin: "true"
+
 # Defaults
 docker_socket_path: /var/run/docker.sock
 ansible_python_interpreter: /usr/bin/python3
