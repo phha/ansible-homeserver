@@ -1,0 +1,13 @@
+---
+# defaults file for gitlab
+
+gitlab_container_name: gitlab
+gitlab_container_image: "gitlab/gitlab-ee:latest"
+gitlab_traefik_rule: "Host(`gitlab.{{ domain }}`)"
+gitlab_expose: "true"
+gitlab_data_directory: "{{ base_data_directory }}/gitlab/data"
+gitlab_config_directory: "{{ base_data_directory }}/gitlab/config"
+gitlab_log_directory: "{{ base_runtime_directory }}/gitlab/log"
+gitlab_restart_policy: unless-stopped
+gitlab_external_url: "https://gitlab.{{ domain }}"
+gitlab_ssh_port: "2224"

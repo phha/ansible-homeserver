@@ -187,6 +187,10 @@ gitea_lfs: "false"
 gitea_disable_registration: "true"
 gitea_require_signin: "true"
 
+# Gitlab
+gitlab_enabled: true
+gitlab_ssh_port: "2224"
+
 # Defaults
 docker_socket_path: /var/run/docker.sock
 ansible_python_interpreter: /usr/bin/python3

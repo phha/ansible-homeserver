@@ -1,0 +1,43 @@
+
+---
+# task file for gitlab
+
+- name: directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ gitlab_config_directory }}"
+    - "{{ gitlab_data_directory }}"
+    - "{{ gitlab_log_directory }}"
+
+- name: docker container
+  docker_container:
+    name: "{{ gitlab_container_name }}"
+    image: "{{ gitlab_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: "{{ gitlab_restart_policy }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      GITLAB_OMNIBUS_CONFIG: |
+        "external_url '{{ gitlab_external_url }}'
+        gitlab_rails['gitlab_shell_ssh_port'] = {{ gitlab_ssh_port }}"
+    volumes:
+      - "{{ gitlab_data_directory }}:/var/opt/gitlab"
+      - "{{ gitlab_log_directory }}:/var/log/gitlab"
+      - "{{ gitlab_config_directory }}:/etc/gitlab"
+    ports:
+      - "{{ gitlab_ssh_port }}:22"
+    labels:
+      traefik.enable: "{{ gitlab_expose }}"
+      traefik.http.routers.gitlab.tls: "true"
+      traefik.http.routers.gitlab.rule: "{{ gitlab_traefik_rule }}"
+      traefik.http.routers.gitlab.tls.certresolver: letsencrypt
+      traefik.http.services.gitlab.loadbalancer.server.port: "80"
+    networks:
+      - name: "{{ traefik_network_name }}"
+      - name: "{{ mail_network_name }}"
