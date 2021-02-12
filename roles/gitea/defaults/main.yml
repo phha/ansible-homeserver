@@ -11,6 +11,7 @@ gitea_network_name: gitea
 gitea_restart_policy: unless-stopped
 gitea_mysql_root_password: "{{ lookup('password', 'credentials/gitea/mysql_root_password length=64') }}"
 gitea_db_password: "{{ lookup('password', 'credentials/gitea/db_password length=64') }}"
+gitea_secret_key: "{{ lookup('password', 'credentials/gitea/secret_key length=64') }}"
 gitea_uid: "5451"
 gitea_gid: "5451"
 gitea_run_mode: prod

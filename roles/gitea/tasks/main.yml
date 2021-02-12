@@ -57,6 +57,7 @@
       DOMAIN: "{{ gitea_domain }}"
       SSH_DOMAIN: "{{ gitea_ssh_domain }}"
       SSH_PORT: "{{ gitea_ssh_port }}"
+      SSH_LISTEN_PORT: "{{ gitea_ssh_port }}"
       ROOT_URL: "{{ gitea_root_url }}"
       LFS_START_SERVER: "{{ gitea_lfs }}"
       DISABLE_REGISTRATION: "{{ gitea_disable_registration }}"
@@ -67,13 +68,14 @@
       DB_USER: gitea
       DB_PASSWD: "{{ gitea_db_password }}"
       INSTALL_LOCK: "false"
+      SECRET_KEY: "{{ gitea_secret_key }}"
       USER_UID: "{{ gitea_uid }}"
       USER_GID: "{{ gitea_gid }}"
     volumes:
       - "{{ gitea_data_directory }}:/data"
       - "{{ gitea_log_directory }}:/data/log"
     ports:
-      - "{{ gitea_ssh_port }}:22"
+      - "{{ gitea_ssh_port }}:{{ gitea_ssh_port }}"
     labels:
       traefik.enable: "{{ gitea_expose }}"
       traefik.http.routers.gitea.tls: "true"
