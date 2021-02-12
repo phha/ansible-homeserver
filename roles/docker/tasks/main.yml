@@ -1,55 +1,58 @@
 ---
 # tasks file for docker
 
-- name: Add Docker GPG apt key
-  apt_key:
-    url: "https://download.docker.com/linux/{{ linux_distribution }}/gpg"
-    state: present
+- name: docker
+  when: "'skip_prereqs' not in ansible_run_tags"
+  block:
+    - name: Add Docker GPG apt key
+      apt_key:
+        url: "https://download.docker.com/linux/{{ linux_distribution }}/gpg"
+        state: present
 
-- name: Add Docker repository
-  apt_repository:
-    repo: "deb https://download.docker.com/linux/{{ linux_distribution }} {{ linux_release }} stable"
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb https://download.docker.com/linux/{{ linux_distribution }} {{ linux_release }} stable"
 
-- name: Update package cache
-  apt:
-    update_cache: yes
+    - name: Update package cache
+      apt:
+        update_cache: yes
 
-- name: Install packages
-  apt:
-    state: latest
-    pkg:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - software-properties-common
-      - python3-pip
-      - virtualenv
-      - python3-setuptools
-      - python3-pexpect
-      - docker-ce
+    - name: Install packages
+      apt:
+        state: latest
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+          - python3-pexpect
+          - docker-ce
 
-- name: Start and enable docker daemon
-  systemd:
-    name: docker
-    enabled: yes
-    state: started
+    - name: Start and enable docker daemon
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
 
-- name: Create internal network
-  docker_network:
-    name: "{{ internal_network_name }}"
-    attachable: yes
-    state: present
+    - name: Create internal network
+      docker_network:
+        name: "{{ internal_network_name }}"
+        attachable: yes
+        state: present
 
-- name: Create mail network
-  docker_network:
-    name: "{{ mail_network_name }}"
-    attachable: yes
-    state: present
+    - name: Create mail network
+      docker_network:
+        name: "{{ mail_network_name }}"
+        attachable: yes
+        state: present
 
-- name: Update facts
-  setup:
+    - name: Update facts
+      setup:
 
-- name: Install docker module for Python
-  pip:
-    name: docker
-    virtualenv_python: python3
+    - name: Install docker module for Python
+      pip:
+        name: docker
+        virtualenv_python: python3

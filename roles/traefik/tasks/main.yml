@@ -1,147 +1,149 @@
 ---
 # tasks file for traefik
+- name: traefik
+  when: "'skip_prereqs' not in ansible_run_tags"
+  block:
+    - name: network
+      docker_network:
+        name: "{{ traefik_network_name }}"
+        attachable: yes
+        state: present
 
-- name: network
-  docker_network:
-    name: "{{ traefik_network_name }}"
-    attachable: yes
-    state: present
+    - name: Duck DNS container
+      docker_container:
+        name: "{{ duckdns_container_name }}"
+        image: "{{ duckdns_container_image }}"
+        recreate: true
+        container_default_behavior: no_defaults
+        networks_cli_compatible: no
+        restart_policy: unless-stopped
+        pull: "{{ 'upgrade' in ansible_run_tags }}"
+        env:
+          TZ: "{{ timezone }}"
+          SUBDOMAINS: "{{ domain }}"
+          LOG_FILE: "false"
+          TOKEN: "{{ duckdns_token }}"
+      tags: duckdns
 
-- name: Duck DNS container
-  docker_container:
-    name: "{{ duckdns_container_name }}"
-    image: "{{ duckdns_container_image }}"
-    recreate: true
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      SUBDOMAINS: "{{ domain }}"
-      LOG_FILE: "false"
-      TOKEN: "{{ duckdns_token }}"
-  tags: duckdns
+    - name: boreale data directory
+      file:
+        path: "{{ boreale_data_directory }}"
+        state: directory
 
-- name: boreale data directory
-  file:
-    path: "{{ boreale_data_directory }}"
-    state: directory
+    - name: boreale container
+      docker_container:
+        name: "{{ boreale_container_name }}"
+        image: "{{ boreale_container_image }}"
+        # command: bin/boreale cli users add
+        recreate: true
+        state: started
+        container_default_behavior: no_defaults
+        networks_cli_compatible: no
+        restart_policy: unless-stopped
+        pull: "{{ 'upgrade' in ansible_run_tags }}"
+        env: 
+          SECRET_KEY_BASE: "{{ lookup('password', 'credentials/boreale/secret_key_base length=64') }}"
+          SIGNING_SALT: "{{ lookup('password', 'credentials/boreale/signing_salt length=64') }}"
+          ENCRYPTION_SALT: "{{ lookup('password', 'credentials/boreale/encryption_salt length=64') }}"
+          PAGE_TITLE: "{{ boreale_page_title }}"
+          SSO_DOMAIN_NAME: "{{ domain }}"
+        volumes:
+          - "{{ boreale_data_directory }}:/opt/app/data"
+        networks:
+          - name: "{{ internal_network_name }}"
 
-- name: boreale container
-  docker_container:
-    name: "{{ boreale_container_name }}"
-    image: "{{ boreale_container_image }}"
-    # command: bin/boreale cli users add
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env: 
-      SECRET_KEY_BASE: "{{ lookup('password', 'credentials/boreale/secret_key_base length=64') }}"
-      SIGNING_SALT: "{{ lookup('password', 'credentials/boreale/signing_salt length=64') }}"
-      ENCRYPTION_SALT: "{{ lookup('password', 'credentials/boreale/encryption_salt length=64') }}"
-      PAGE_TITLE: "{{ boreale_page_title }}"
-      SSO_DOMAIN_NAME: "{{ domain }}"
-    volumes:
-      - "{{ boreale_data_directory }}:/opt/app/data"
-    networks:
-      - name: "{{ internal_network_name }}"
-
-- name: wait for boreale
-  pause:
-    seconds: 10
-  when: ansible_facts['lsb']['id'] == 'Raspbian'
+    - name: wait for boreale
+      pause:
+        seconds: 10
+      when: ansible_facts['lsb']['id'] == 'Raspbian'
 
 
-- name: boreale users
-  expect:
-    command: "docker exec -i {{ boreale_container_name }} bin/boreale cli users add"
-    responses:
-      "username:": "{{ item.username }}"
-      "password:": "{{ item.password }}"
-  loop: "{{ boreale_users }}"
-  no_log: true
-  tags: boreale_users
+    - name: boreale users
+      expect:
+        command: "docker exec -i {{ boreale_container_name }} bin/boreale cli users add"
+        responses:
+          "username:": "{{ item.username }}"
+          "password:": "{{ item.password }}"
+      loop: "{{ boreale_users }}"
+      no_log: true
+      tags: boreale_users
 
-- name: rules directory
-  file:
-    path: "{{ traefik_data_directory }}/rules.d"
-    state: directory
+    - name: rules directory
+      file:
+        path: "{{ traefik_data_directory }}/rules.d"
+        state: directory
 
-- name: acme.json file
-  file:
-    path: "{{ traefik_data_directory }}/acme.json"
-    state: touch
-    mode: 0600
+    - name: acme.json file
+      file:
+        path: "{{ traefik_data_directory }}/acme.json"
+        state: touch
+        mode: 0600
 
-- name: traefik config file
-  template:
-    src: traefik.yaml.j2
-    dest: "{{ traefik_data_directory }}/traefik.yaml"
+    - name: traefik config file
+      template:
+        src: traefik.yaml.j2
+        dest: "{{ traefik_data_directory }}/traefik.yaml"
 
-- name: traefik middlewares config file
-  template:
-    src: middlewares.yaml.j2
-    dest: "{{ traefik_data_directory }}/rules.d/middlewares.yaml"
+    - name: traefik middlewares config file
+      template:
+        src: middlewares.yaml.j2
+        dest: "{{ traefik_data_directory }}/rules.d/middlewares.yaml"
 
-- name: remove extra routes directory
-  file:
-    path: "{{ traefik_data_directory }}/rules.d/extra_routes"
-    state: absent
-  tags:
-    - extra_routes
+    - name: remove extra routes directory
+      file:
+        path: "{{ traefik_data_directory }}/rules.d/extra_routes"
+        state: absent
+      tags:
+        - extra_routes
 
-- name: create extra routes directory
-  file:
-    path: "{{ traefik_data_directory }}/rules.d/extra_routes"
-    state: directory
-  tags:
-    - extra_routes
+    - name: create extra routes directory
+      file:
+        path: "{{ traefik_data_directory }}/rules.d/extra_routes"
+        state: directory
+      tags:
+        - extra_routes
 
-- name: extra routes
-  template:
-    src: extra_route.yaml.j2
-    dest: "{{ traefik_data_directory }}/rules.d/{{ item.key }}.yaml"
-    lstrip_blocks: true
-  loop: "{{ extra_routes | dict2items }}"
-  tags:
-    - extra_routes
+    - name: extra routes
+      template:
+        src: extra_route.yaml.j2
+        dest: "{{ traefik_data_directory }}/rules.d/{{ item.key }}.yaml"
+        lstrip_blocks: true
+      loop: "{{ extra_routes | dict2items }}"
+      tags:
+        - extra_routes
 
-- name: container
-  docker_container:
-    name: "{{ traefik_container_name }}"
-    image: "{{ traefik_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      DUCKDNS_TOKEN: "{{ duckdns_token }}"
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "{{ docker_socket_path }}:/var/run/docker.sock:ro"
-      - "{{ traefik_data_directory }}/acme.json:/acme.json"
-      - "{{ traefik_data_directory }}/rules.d:/rules.d"
-      - "{{ traefik_data_directory }}/traefik.yaml:/traefik.yaml"
-    labels:
-      traefik.enable: "{{ traefik_expose }}"
-      traefik.http.routers.traefik.tls: "true"
-      traefik.http.routers.traefik.rule: "Host(`traefik.{{ domain }}`)"
-      traefik.http.routers.traefik.middlewares: fauth@file
-      traefik.http.routers.traefik.tls.certresolver: letsencrypt
-      traefik.http.services.traefik.loadbalancer.server.port: "8080"
-    networks:
-      - name: "{{ internal_network_name }}"
-      - name: "{{ traefik_network_name }}"
-        aliases:
-          - "{{ traefik_container_name }}"
-    etc_hosts:
-      "host.docker.internal": "{{ host_ip }}"
+    - name: container
+      docker_container:
+        name: "{{ traefik_container_name }}"
+        image: "{{ traefik_container_image }}"
+        recreate: true
+        state: started
+        container_default_behavior: no_defaults
+        networks_cli_compatible: no
+        restart_policy: unless-stopped
+        pull: "{{ 'upgrade' in ansible_run_tags }}"
+        env:
+          TZ: "{{ timezone }}"
+          DUCKDNS_TOKEN: "{{ duckdns_token }}"
+        ports:
+          - "80:80"
+          - "443:443"
+        volumes:
+          - "{{ docker_socket_path }}:/var/run/docker.sock:ro"
+          - "{{ traefik_data_directory }}/acme.json:/acme.json"
+          - "{{ traefik_data_directory }}/rules.d:/rules.d"
+          - "{{ traefik_data_directory }}/traefik.yaml:/traefik.yaml"
+        labels:
+          traefik.enable: "{{ traefik_expose }}"
+          traefik.http.routers.traefik.tls: "true"
+          traefik.http.routers.traefik.rule: "Host(`traefik.{{ domain }}`)"
+          traefik.http.routers.traefik.middlewares: fauth@file
+          traefik.http.routers.traefik.tls.certresolver: letsencrypt
+          traefik.http.services.traefik.loadbalancer.server.port: "8080"
+        networks:
+          - name: "{{ internal_network_name }}"
+          - name: "{{ traefik_network_name }}"
+            aliases:
+              - "{{ traefik_container_name }}"
+        etc_hosts:
+          "host.docker.internal": "{{ host_ip }}"
