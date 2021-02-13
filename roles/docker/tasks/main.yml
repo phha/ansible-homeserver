@@ -2,7 +2,7 @@
 # tasks file for docker
 
 - name: docker
-  when: "'skip_prereqs' not in ansible_run_tags"
+  when: "'nodeps' not in ansible_run_tags"
   block:
     - name: Add Docker GPG apt key
       apt_key:

@@ -1,7 +1,7 @@
 ---
 # tasks file for traefik
 - name: traefik
-  when: "'skip_prereqs' not in ansible_run_tags"
+  when: "'nodeps' not in ansible_run_tags"
   block:
     - name: network
       docker_network:
