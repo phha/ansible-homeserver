@@ -14,7 +14,7 @@
   copy:
     src: mosquitto.conf
     dest: "{{ mosquitto_data_directory }}/config/mosquitto.conf"
-    force: no
+    force: yes
 
 - name: Start mosquitto container
   docker_container:

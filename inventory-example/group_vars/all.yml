@@ -68,6 +68,9 @@ homeassistant_enabled: true
 # Node-Red
 nodered_enabled: true
 
+# MQTT
+mqtt_enabled: true
+
 # Zigbee
 zigbee_enabled: true
 zigbee_device: /dev/ttyACM0
