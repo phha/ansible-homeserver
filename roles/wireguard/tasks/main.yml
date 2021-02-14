@@ -1,0 +1,37 @@
+---
+
+- name: config directory
+  file:
+    path: "{{ wireguard_config_directory }}"
+    owner: "{{ wireguard_uid }}"
+    group: "{{ wireguard_gid }}"
+    state: directory
+
+- name: docker container
+  docker_container:
+    name: "{{ wireguard_container_name }}"
+    image: "{{ wireguard_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: "{{ wireguard_restart_policy }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    env:
+      TZ: "{{ timezone }}"
+      PUID: "{{ wireguard_uid }}"
+      PGID: "{{ wireguard_gid }}"
+      SERVERURL: "{{ wireguard_url }}"
+      SERVERPORT: "{{ wireguard_port }}"
+      PEERS: "{{ wireguard_peers }}"
+      PEERDNS: "{{ wireguard_peerdns }}"
+      INTERNAL_SUBNET: "{{ wireguard_internal_subnet }}"
+      ALLOWEDIPS: "{{ wireguard_allowed_ips }}"
+    ports:
+      - "{{ wireguard_port }}:51820/udp"
+    volumes:
+      - "{{ wireguard_config_directory }}:/config"
+      - "{{ wireguard_modules_directory }}:/lib/modules"
+    capabilities:
+      - net_admin
+      - sys_module

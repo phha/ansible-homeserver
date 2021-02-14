@@ -1,0 +1,16 @@
+---
+# defaults file for wireguard
+
+wireguard_container_name: wireguard
+wireguard_container_image: "ghcr.io/linuxserver/wireguard"
+wireguard_restart_policy: unless-stopped
+wireguard_url: "wireguard.{{ domain }}"
+wireguard_port: "51820"
+wireguard_config_directory: "{{ base_data_directory }}/wireguard"
+wireguard_modules_directory: "/lib/modules"
+wireguard_uid: "5182"
+wireguard_gid: "5182"
+wireguard_peerdns: auto
+wireguard_internal_subnet: "10.13.13.0"
+wireguard_allowed_ips: "0.0.0.0/0, ::0/0"
+wireguard_peers: "10"

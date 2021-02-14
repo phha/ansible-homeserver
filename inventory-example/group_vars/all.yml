@@ -190,6 +190,10 @@ gitea_lfs: "false"
 gitea_disable_registration: "true"
 gitea_require_signin: "true"
 
+# Wireguard
+wireguard_enabled: true
+wireguard_peers: "my_phone,my_notebook"
+
 # Defaults
 docker_socket_path: /var/run/docker.sock
 ansible_python_interpreter: /usr/bin/python3
