@@ -27,7 +27,6 @@
       traefik.enable: "{{ guacamole_expose }}"
       traefik.http.routers.guacamole.tls: "true"
       traefik.http.routers.guacamole.rule: "{{ guacamole_traefik_rule }}"
-      traefik.http.routers.guacamole.middlewares: fauth@file
       traefik.http.routers.guacamole.tls.certresolver: letsencrypt
       traefik.http.services.guacamole.loadbalancer.server.port: "8080"
     networks:
