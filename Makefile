@@ -1,9 +1,9 @@
 all: playbook
-.PHONY: playbook all retry vars hosts Makefile %
+.PHONY: playbook all retry vars hosts Makefile galaxy %
 
 Makefile:
 
-%: inventory
+%: galaxy inventory
 	@ansible-playbook -K -i inventory --ask-vault-pass --tags $@ site.yaml
 
 vars: inventory
@@ -11,6 +11,9 @@ vars: inventory
 
 hosts: inventory
 	@ansible-vault edit inventory/inventory.yml
+
+galaxy: 
+	@ansible-galaxy install -r requirements.yml
 
 inventory:
 	@echo "Looks like this is the first time you are running this playbook."
@@ -33,8 +36,8 @@ inventory:
 	@ansible-vault encrypt inventory/group_vars/all.yml inventory/inventory.yml
 	@ansible-vault edit inventory/group_vars/all.yml inventory/inventory.yml
 
-playbook: inventory
+playbook: galaxy inventory
 	@ansible-playbook -K -i inventory --ask-vault-pass site.yaml
 
-retry: inventory
+retry: galaxy inventory
 	@ansible-playbook -K -i inventory --ask-vault-pass --limit @site.retry site.yaml

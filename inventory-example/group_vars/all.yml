@@ -10,9 +10,10 @@
 
 # Common
 timezone: Europe/Berlin
-base_data_directory: /srv/docker/data
-base_runtime_directory: /srv/docker/runtime
-shared_directory: /srv/docker/shared
+base_directory: /srv/docker
+base_data_directory: "{{ base_directory }}/data"
+base_runtime_directory: "{{ base_directory }}/runtime"
+shared_directory: "{{ base_directory }}/shared"
 
 # Backups
 db_backups_enabled: true
@@ -81,7 +82,7 @@ tvheadend_recordings_directory: /mnt/storage/recordings
 tvheadend_timeshift_directory: /mnt/storage/timeshift
 tvheadend_tvicons_directory: /mnt/storage/tvicons
 tvheadend_uid: "108"
-tvheadend_pid: "112"
+tvheadend_gid: "112"
 
 # pihole
 pihole_enabled: true
@@ -193,6 +194,85 @@ gitea_require_signin: "true"
 # Wireguard
 wireguard_enabled: true
 wireguard_peers: "my_phone,my_notebook"
+
+# Samba
+samba_enabled: true
+samba_shares_root: "{{ base_directory }}/samba_shares"
+samba_load_homes: true
+samba_netbios_name: "{{ ansible_hostname }}"
+samba_users:
+  - name: myuser
+    password: mypassword
+samba_shares:
+  - name: series
+    comment: TV Series
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: false
+    path: "{{ media_series_directory }}"
+    owner: "{{ media_uid }}"
+    group: "{{ media_gid }}"
+  - name: movies
+    comment: Movies
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: false
+    path: "{{ media_movies_directory }}"
+    owner: "{{ media_uid }}"
+    group: "{{ media_gid }}"
+  - name: recordings
+    comment: TV recordings
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: false
+    path: "{{ tvheadend_recordings_directory }}"
+    owner: "{{ tvheadend_uid }}"
+    group: "{{ tvheadend_gid }}"
+  - name: books
+    comment: Books
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: false
+    path: "{{ media_books_directory }}"
+    owner: "{{ media_uid }}"
+    group: "{{ media_gid }}"
+  - name: audiobooks
+    comment: Audiobooks
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: false
+    path: "{{ media_audiobooks_directory }}"
+    owner: "{{ media_uid }}"
+    group: "{{ media_gid }}"
+  - name: magazines
+    comment: Magazines
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: false
+    path: "{{ media_magazines_directory }}"
+    owner: "{{ media_uid }}"
+    group: "{{ media_gid }}"
+  - name: comics
+    comment: Comics
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: false
+    path: "{{ media_comics_directory }}"
+    owner: "{{ media_uid }}"
+    group: "{{ media_gid }}"
+  - name: dump
+    comment: File dump
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: true
 
 # Defaults
 docker_socket_path: /var/run/docker.sock

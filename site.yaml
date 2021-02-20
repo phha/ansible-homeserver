@@ -139,6 +139,10 @@
       tags:
         - wireguard
       when: (wireguard_enabled | default(False))
+    - role: samba
+      tags:
+        - samba
+      when: (samba_enabled | default(False))
     - role: mail
       tags:
         - mail

@@ -30,7 +30,7 @@
     env:
       TZ: "{{ timezone }}"
       PUID: "{{ tvheadend_uid }}"
-      PGID: "{{ tvheadend_pid }}"
+      PGID: "{{ tvheadend_gid }}"
       RUN_OPTS: --noacl
     volumes:
       - "{{ tvheadend_config_directory }}:/config"
