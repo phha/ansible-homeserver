@@ -5,8 +5,10 @@
 - name: network
   docker_network:
     name: "{{ elkarbackup_network_name }}"
-    attachable: yes
+    attachable: true
     state: present
+    driver: overlay
+    internal: true
 
 - name: directories
   file:

@@ -4,8 +4,10 @@
 - name: Create nextcloud network
   docker_network:
     name: "{{ nextcloud_network_name }}"
-    attachable: yes
+    attachable: true
     state: present
+    driver: overlay
+    internal: true
 
 - name: Create nextcloud directories
   file:
