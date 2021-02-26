@@ -2,6 +2,8 @@
 
 - hosts: all
   become: true
+  environment:
+    DOCKER_TIMEOUT: "600"
   roles:
     - role: traefik
       tags:
@@ -143,6 +145,10 @@
       tags:
         - samba
       when: (samba_enabled | default(False))
+    - role: jupyter
+      tags:
+        - jupyter
+      when: (jupyter_enabled | default(False))
     - role: mail
       tags:
         - mail

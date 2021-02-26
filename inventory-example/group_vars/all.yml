@@ -195,6 +195,9 @@ gitea_require_signin: "true"
 wireguard_enabled: true
 wireguard_peers: "my_phone,my_notebook"
 
+# Jupyter
+jupyter_enabled: true
+
 # Samba
 samba_enabled: true
 samba_shares_root: "{{ base_directory }}/samba_shares"

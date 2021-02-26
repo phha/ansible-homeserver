@@ -1,0 +1,38 @@
+---
+# task file for jupyter
+
+- name: data directory
+  file:
+    path: "{{ jupyter_data_directory }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+
+
+- name: jupyter docker container
+  docker_container:
+    name: "{{ jupyter_container_name }}"
+    image: "{{ jupyter_container_image }}"
+    recreate: true
+    state: started
+    container_default_behavior: no_defaults
+    networks_cli_compatible: no
+    restart_policy: "{{ jupyter_restart_policy }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    command: "start-notebook.sh --ServerApp.custom_display_url='{{ jupyter_url }}' --ServerApp.token='' --ServerApp.password=''"
+    env:
+      TZ: "{{ timezone }}"
+      JUPYTER_ENABLE_LAB: "{{ jupyter_lab_enabled }}"
+      RESTARTABLE: "{{ jupyter_restartable }}"
+      JUPYTER_TOKEN: ""
+    volumes:
+      - "{{ jupyter_data_directory }}:/home/jovyan"
+    labels:
+      traefik.enable: "{{ jupyter_expose }}"
+      traefik.http.routers.jupyter.tls: "true"
+      traefik.http.routers.jupyter.rule: "{{ jupyter_traefik_rule }}"
+      traefik.http.routers.jupyter.middlewares: fauth@file
+      traefik.http.routers.jupyter.tls.certresolver: letsencrypt
+      traefik.http.services.jupyter.loadbalancer.server.port: "8888"
+    networks:
+      - name: "{{ traefik_network_name }}"

@@ -1,0 +1,12 @@
+---
+# defaults file for jupyter
+
+jupyter_container_name: jupyter
+jupyter_container_image: jupyter/tensorflow-notebook:latest
+jupyter_restart_policy: unless-stopped
+jupyter_url: "https://jupyter.{{ domain }}:443"
+jupyter_traefik_rule: "Host(`jupyter.{{ domain }}`)"
+jupyter_expose: "true"
+jupyter_data_directory: "{{ base_data_directory }}/jupyter"
+jupyter_lab_enabled: "yes"
+jupyter_restartable: "yes"
