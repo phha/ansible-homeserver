@@ -45,6 +45,12 @@
       traefik.http.routers.tvheadend.middlewares: fauth@file
       traefik.http.routers.tvheadend.tls.certresolver: letsencrypt
       traefik.http.services.tvheadend.loadbalancer.server.port: "9981"
+      traefik.http.routers.xmltv.tls: "true"
+      traefik.http.routers.xmltv.rule: "{{ xmltv_traefik_rule }}"
+      traefik.http.routers.xmltv.middlewares: xmltv-add-prefix@docker
+      traefik.http.routers.xmltv.tls.certresolver: letsencrypt
+      traefik.http.middlewares.xmltv-add-prefix.addprefix.prefix: /xmltv/channels
+      traefik.http.routers.xmltv.service: tvheadend
     network_mode: host
     etc_hosts:
       "host.docker.internal": "{{ host_ip }}"
