@@ -78,6 +78,11 @@
         - paperless
         - productivity
       when: (paperless_enabled | default(False))
+    - role: paperless-ng
+      tags:
+        - paperless-ng
+        - productivity
+      when: (paperless_ng_enabled | default(False))
     - role: nodered
       tags:
         - nodered

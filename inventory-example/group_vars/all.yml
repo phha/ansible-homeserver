@@ -132,6 +132,11 @@ paperless_consume_directory: /mnt/storage/paperless/consume
 paperless_data_directory: "{{ base_data_directory }}/paperless"
 paperless_export_directory: "{{ paperless_data_directory }}/export"
 
+# paperless-ng
+paperless_ng_enabled: true
+paperless_ng_superuser_name: admin
+paperless_ng_superuser_password: "{{ lookup('password', 'credentials/paperless_ng/superuser-password length=64') }}"
+
 # guacamole
 guacamole_enabled: true
 

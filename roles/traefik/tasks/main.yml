@@ -57,7 +57,6 @@
         seconds: 10
       when: ansible_facts['lsb']['id'] == 'Raspbian'
 
-
     - name: boreale users
       expect:
         command: "docker exec -i {{ boreale_container_name }} bin/boreale cli users add"

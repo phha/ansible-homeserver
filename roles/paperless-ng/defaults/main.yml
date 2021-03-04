@@ -1,0 +1,36 @@
+---
+# defaults file for paperless_ng
+
+paperless_ng_network_name: paperless_ng
+paperless_ng_container_name: paperless_ng
+paperless_ng_container_image: "jonaswinkler/paperless-ng:latest"
+paperless_ng_restart_policy: unless-stopped
+paperless_ng_traefik_rule: "Host(`paperless-ng.{{ domain }}`)"
+paperless_ng_expose: "true"
+paperless_ng_data_directory: "{{ base_data_directory }}/paperless_ng/data"
+paperless_ng_media_directory: "{{ base_data_directory }}/paperless_ng/media"
+paperless_ng_consume_directory: "{{ base_data_directory }}/paperless_ng/consume"
+paperless_ng_export_directory: "{{ base_data_directory }}/paperless_ng/export"
+paperless_ng_db_directory: "{{ base_runtime_directory }}/paperless_ng/db"
+paperless_ng_ocr_language: deu
+paperless_ng_ocr_languages: deu eng
+paperless_ng_ocr_threads: "1"
+paperless_ng_allowed_hosts: "paperless-ng.{{ domain }}"
+paperless_ng_filename_format: "{correspondent}/{created_year}-{created_month}-{created_day} ({asn}) {title} [{tag_list}]"
+paperless_ng_uid: "4815"
+paperless_ng_gid: "4815"
+paperless_ng_postgres_db: paperless_ng
+paperless_ng_postgres_user: paperless_ng
+paperless_ng_postgres_password: "{{ lookup('password', 'credentials/paperless_ng/postgresql_password length=64') }}"
+paperless_ng_secret_key: "{{ lookup('password', 'credentials/paperless_ng/secret-key length=64') }}"
+paperless_ng_superuser_name: admin
+paperless_ng_superuser_password: "{{ lookup('password', 'credentials/paperless_ng/superuser-password length=64') }}"
+paperless_ng_superuser_mail: "{{ email_address }}"
+
+paperless_ng_redis_container_name: paperless_ng_redis
+paperless_ng_redis_container_image: "redis:6.0"
+paperless_ng_redis_restart_policy: unless-stopped
+
+paperless_ng_postgres_container_name: paperless_ng_postgres
+paperless_ng_postgres_container_image: "postgres:13"
+paperless_ng_postgres_restart_policy: unless-stopped
