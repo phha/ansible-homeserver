@@ -26,8 +26,8 @@
             - "{{ calibre_data_directory }}:/config"
             - "{{ media_books_directory }}:/books"
           labels:
-            - "traefik.enable:={{ calibre_expose }}"
-            - "traefik.http.routers.calibre.tls:=true"
+            - "traefik.enable={{ calibre_expose }}"
+            - "traefik.http.routers.calibre.tls=true"
             - "traefik.http.routers.calibre.rule={{ calibre_traefik_rule }}"
             - "traefik.http.routers.calibre.middlewares=fauth@file"
             - "traefik.http.routers.calibre.tls.certresolver=letsencrypt"
