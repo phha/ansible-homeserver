@@ -154,6 +154,10 @@
       tags:
         - jupyter
       when: (jupyter_enabled | default(False))
+    - role: diun
+      tags:
+        - diun
+      when: (diun_enabled | default(False))
     - role: mail
       tags:
         - mail

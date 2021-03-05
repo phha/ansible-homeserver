@@ -4,5 +4,4 @@
 mail_data_directory: "{{ base_data_directory }}/mail"
 mail_container_image: "turgon37/smtp-relay:latest"
 mail_container_name: mail
-mail_subnet: 172.16.25.0/24
 mail_relay_postmaster: "{{ mail_relay_user }}"

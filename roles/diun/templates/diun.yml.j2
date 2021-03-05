@@ -1,0 +1,11 @@
+watch:
+  workers: {{ diun_workers }}
+  schedule: "{{ diun_schedule }}"
+  firstCheckNotif: {{ diun_first_check_notify }}
+  compareDigest: {{ diun_compare_digest }}
+providers:
+  docker:
+    watchByDefault: true
+    watchStopped: true
+notif:
+  {{ diun_notifier | to_yaml(indent=2, width=9999) }}

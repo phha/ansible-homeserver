@@ -30,6 +30,7 @@
           - python3-setuptools
           - python3-pexpect
           - docker-ce
+          - docker-compose
 
     - name: Start and enable docker daemon
       systemd:
@@ -48,6 +49,8 @@
     - name: Create mail network
       docker_network:
         name: "{{ mail_network_name }}"
+        ipam_config:
+          - subnet: "{{ mail_subnet }}"
         attachable: true
         state: present
         driver: overlay

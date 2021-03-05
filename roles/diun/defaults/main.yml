@@ -1,0 +1,23 @@
+---
+# defaults file for diun
+
+diun_project_name: diun
+diun_container_name: diun
+diun_container_image: crazymax/diun:latest
+diun_data_directory: "{{ base_data_directory }}/diun"
+diun_log_level: info
+diun_log_json: "false"
+diun_restart_policy: unless-stopped
+
+diun_workers: 10
+diun_schedule: "0 */6 * * *"
+diun_first_check_notify: true
+diun_compare_digest: true
+diun_notifier:
+  mail:
+    host: mail
+    port: 25
+    ssl: false
+    insecureSkipVerify: true
+    from: "{{ email_address }}"
+    to: "{{ email_address }}"

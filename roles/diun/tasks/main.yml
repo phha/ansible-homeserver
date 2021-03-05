@@ -1,0 +1,39 @@
+---
+# task file for diun
+
+- name: data directory
+  file:
+    path: "{{ diun_data_directory }}/data"
+    state: directory
+
+- name: config file
+  template:
+    src: diun.yml.j2
+    dest: "{{ diun_data_directory }}/diun.yml"
+
+- name: docker compose
+  docker_compose:
+    project_name: "{{ diun_project_name }}"
+    definition:
+      version: "3.5"
+      services:
+        diun:
+          container_name: "{{ diun_container_name }}"
+          image: "{{ diun_container_image }}"
+          volumes:
+            - "{{ diun_data_directory }}/data:/data"
+            - "{{ diun_data_directory }}/diun.yml:/diun.yml:ro"
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+          environment:
+            - "TZ={{ timezone }}"
+            - "LOG_LEVEL={{ diun_log_level }}"
+            - "LOG_JSON={{ diun_log_json }}"
+          restart: "{{ diun_restart_policy }}"
+          networks:
+            - mail
+            - traefik_public
+      networks:
+        mail:
+          external: true
+        traefik_public:
+          external: true
