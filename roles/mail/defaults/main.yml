@@ -1,6 +1,8 @@
 ---
 # defaults file for mail
 
+mail_project_name: mail
+mail_restart_policy: unless-stopped
 mail_data_directory: "{{ base_data_directory }}/mail"
 mail_container_image: "turgon37/smtp-relay:latest"
 mail_container_name: mail
