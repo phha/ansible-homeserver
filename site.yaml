@@ -73,11 +73,6 @@
         - media
         - books
       when: (calibre_web_enabled | default(False))
-    - role: paperless
-      tags:
-        - paperless
-        - productivity
-      when: (paperless_enabled | default(False))
     - role: paperless-ng
       tags:
         - paperless-ng

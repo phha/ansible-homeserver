@@ -1,14 +1,6 @@
 ---
 # task file for paperless_ng
 
-- name: network
-  docker_network:
-    name: "{{ paperless_ng_network_name }}"
-    attachable: true
-    state: present
-    driver: overlay
-    internal: true
-
 - name: directories
   file:
     path: "{{ item }}"
@@ -22,84 +14,109 @@
     - "{{ paperless_ng_export_directory }}"
     - "{{ paperless_ng_db_directory }}"
 
-- name: redis docker container
-  docker_container:
-    name: "{{ paperless_ng_redis_container_name }}"
-    image: "{{ paperless_ng_redis_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: "{{ paperless_ng_redis_restart_policy }}"
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    networks:
-      - name: "{{ paperless_ng_network_name }}"
-
-- name: postgres docker container
-  docker_container:
-    name: "{{ paperless_ng_postgres_container_name }}"
-    image: "{{ paperless_ng_postgres_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: "{{ paperless_ng_postgres_restart_policy }}"
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    volumes:
-      - "{{ paperless_ng_db_directory }}:/var/lib/postgresql/data"
-    env:
-      POSTGRES_DB: "{{ paperless_ng_postgres_db }}"
-      POSTGRES_USER: "{{ paperless_ng_postgres_user }}"
-      POSTGRES_PASSWORD: "{{ paperless_ng_postgres_password }}"
-    networks:
-      - name: "{{ paperless_ng_network_name }}"
-
-- name: docker container
-  docker_container:
-    name: "{{ paperless_ng_container_name }}"
-    image: "{{ paperless_ng_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: "{{ paperless_ng_restart_policy }}"
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      USERMAP_UID: "{{ paperless_ng_uid }}"
-      USERMAP_GID: "{{ paperless_ng_gid }}"
-      PAPERLESS_OCR_THREADS: "{{ paperless_ng_ocr_threads }}"
-      PAPERLESS_OCR_LANGUAGE: "{{ paperless_ng_ocr_language }}"
-      PAPERLESS_OCR_LANGUAGES: "{{ paperless_ng_ocr_languages }}"
-      PAPERLESS_SECRET_KEY: "{{ paperless_ng_secret_key }}" 
-      PAPERLESS_ALLOWED_HOSTS: "{{ paperless_ng_allowed_hosts }}"
-      PAPERLESS_FILENAME_FORMAT: "{{ paperless_ng_filename_format }}"
-      PAPERLESS_REDIS: "redis://{{ paperless_ng_redis_container_name }}:6379"
-      PAPERLESS_DBHOST: "{{ paperless_ng_postgres_container_name }}"
-      PAPERLESS_DBNAME: "{{ paperless_ng_postgres_db }}"
-      PAPERLESS_DBUSER: "{{ paperless_ng_postgres_user }}"
-      PAPERLESS_DBPASS: "{{ paperless_ng_postgres_password }}"
-    volumes:
-      - "{{ paperless_ng_data_directory }}:/usr/src/paperless/data"
-      - "{{ paperless_ng_media_directory }}:/usr/src/paperless/media"
-      - "{{ paperless_ng_consume_directory }}:/consume"
-      - "{{ paperless_ng_export_directory }}:/export"
-    labels:
-      traefik.enable: "{{ paperless_ng_expose }}"
-      traefik.http.routers.paperless_ng.tls: "true"
-      traefik.http.routers.paperless_ng.rule: "{{ paperless_ng_traefik_rule }}"
-      traefik.http.routers.paperless_ng.tls.certresolver: letsencrypt
-      traefik.http.routers.paperless_ng.middlewares: frame-allow@file
-      traefik.http.services.paperless_ng.loadbalancer.server.port: "8000"
-    networks:
-      - name: "{{ traefik_network_name }}"
-        aliases:
-          - "{{ traefik_container_name }}"
-      - name: "{{ paperless_ng_network_name }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ paperless_ng_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        paperless_ng_internal:
+          driver: overlay
+          internal: true
+      services:
+        paperless_ng_redis:
+          container_name: "{{ paperless_ng_redis_container_name }}"
+          image: "{{ paperless_ng_redis_container_image }}"
+          restart: "{{ paperless_ng_redis_restart_policy }}"
+          networks:
+            - paperless_ng_internal
+        paperless_ng_postgres:
+          container_name: "{{ paperless_ng_postgres_container_name }}"
+          image: "{{ paperless_ng_postgres_container_image }}"
+          restart: "{{ paperless_ng_postgres_restart_policy }}"
+          volumes:
+            - "{{ paperless_ng_db_directory }}:/var/lib/postgresql/data"
+          environment:
+            - "POSTGRES_DB={{ paperless_ng_postgres_db }}"
+            - "POSTGRES_USER={{ paperless_ng_postgres_user }}"
+            - "POSTGRES_PASSWORD={{ paperless_ng_postgres_password }}"
+          networks:
+            - paperless_ng_internal
+        paperless_ng:
+          container_name: "{{ paperless_ng_container_name }}"
+          image: "{{ paperless_ng_container_image }}"
+          restart: "{{ paperless_ng_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "USERMAP_UID={{ paperless_ng_uid }}"
+            - "USERMAP_GID={{ paperless_ng_gid }}"
+            - "PAPERLESS_OCR_THREADS={{ paperless_ng_ocr_threads }}"
+            - "PAPERLESS_OCR_LANGUAGE={{ paperless_ng_ocr_language }}"
+            - "PAPERLESS_OCR_LANGUAGES={{ paperless_ng_ocr_languages }}"
+            - "PAPERLESS_SECRET_KEY={{ paperless_ng_secret_key }}" 
+            - "PAPERLESS_ALLOWED_HOSTS={{ paperless_ng_allowed_hosts }}"
+            - "PAPERLESS_FILENAME_FORMAT={{ paperless_ng_filename_format }}"
+            - "PAPERLESS_REDIS=redis://{{ paperless_ng_redis_container_name }}:6379"
+            - "PAPERLESS_DBHOST={{ paperless_ng_postgres_container_name }}"
+            - "PAPERLESS_DBNAME={{ paperless_ng_postgres_db }}"
+            - "PAPERLESS_DBUSER={{ paperless_ng_postgres_user }}"
+            - "PAPERLESS_DBPASS={{ paperless_ng_postgres_password }}"
+          volumes:
+            - "{{ paperless_ng_data_directory }}:/usr/src/paperless/data"
+            - "{{ paperless_ng_media_directory }}:/usr/src/paperless/media"
+            - "{{ paperless_ng_consume_directory }}:/consume"
+            - "{{ paperless_ng_export_directory }}:/export"
+          labels:
+            - "traefik.enable={{ paperless_ng_expose }}"
+            - "traefik.http.routers.paperless_ng.tls=true"
+            - "traefik.http.routers.paperless_ng.rule={{ paperless_ng_traefik_rule }}"
+            - "traefik.http.routers.paperless_ng.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.paperless_ng.middlewares=frame-allow@file"
+            - "traefik.http.services.paperless_ng.loadbalancer.server.port=8000"
+          networks:
+            - paperless_ng_internal
+            - traefik_public
+        export:
+          container_name: "{{ paperless_ng_export_container_name }}"
+          image: "{{ paperless_ng_container_image }}"
+          entrypoint: |
+              bash -c 'bash -s <<EOF
+              trap "break;exit" SIGHUP SIGINT SIGTERM
+              while /bin/true; do
+                  python3 /usr/src/paperless/src/manage.py document_exporter /export
+                  sleep $$PAPERLESS_NG_EXPORT_SLEEP
+              done
+              EOF'
+          restart: "{{ paperless_ng_export_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "USERMAP_UID={{ paperless_ng_export_uid }}"
+            - "USERMAP_GID={{ paperless_ng_export_gid }}"
+            - "PAPERLESS_OCR_THREADS={{ paperless_ng_ocr_threads }}"
+            - "PAPERLESS_OCR_LANGUAGE={{ paperless_ng_ocr_language }}"
+            - "PAPERLESS_OCR_LANGUAGES={{ paperless_ng_ocr_languages }}"
+            - "PAPERLESS_SECRET_KEY={{ paperless_ng_secret_key }}" 
+            - "PAPERLESS_ALLOWED_HOSTS={{ paperless_ng_allowed_hosts }}"
+            - "PAPERLESS_FILENAME_FORMAT={{ paperless_ng_filename_format }}"
+            - "PAPERLESS_REDIS=redis://{{ paperless_ng_redis_container_name }}:6379"
+            - "PAPERLESS_DBHOST={{ paperless_ng_postgres_container_name }}"
+            - "PAPERLESS_DBNAME={{ paperless_ng_postgres_db }}"
+            - "PAPERLESS_DBUSER={{ paperless_ng_postgres_user }}"
+            - "PAPERLESS_DBPASS={{ paperless_ng_postgres_password }}"
+            - "PAPERLESS_NG_EXPORT_SLEEP={{ paperless_ng_export_sleep }}"
+          volumes:
+            - "{{ paperless_ng_data_directory }}:/usr/src/paperless/data"
+            - "{{ paperless_ng_media_directory }}:/usr/src/paperless/media"
+            - "{{ paperless_ng_consume_directory }}:/consume"
+            - "{{ paperless_ng_export_directory }}:/export"
+          networks:
+            - paperless_ng_internal
 
 - name: wait
   pause:
-    seconds: 5
+    seconds: 10
 
 - name: superuser
   expect:

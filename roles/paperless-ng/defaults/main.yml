@@ -1,6 +1,7 @@
 ---
 # defaults file for paperless_ng
 
+paperless_ng_project_name: paperless_ng
 paperless_ng_network_name: paperless_ng
 paperless_ng_container_name: paperless_ng
 paperless_ng_container_image: "jonaswinkler/paperless-ng:latest"
@@ -34,3 +35,9 @@ paperless_ng_redis_restart_policy: unless-stopped
 paperless_ng_postgres_container_name: paperless_ng_postgres
 paperless_ng_postgres_container_image: "postgres:13"
 paperless_ng_postgres_restart_policy: unless-stopped
+
+paperless_ng_export_container_name: paperless_ng_export
+paperless_ng_export_restart_policy: unless-stopped
+paperless_ng_export_sleep: 1d
+paperless_ng_export_uid: "{{ paperless_ng_uid }}"
+paperless_ng_export_gid: "{{ paperless_ng_gid }}"

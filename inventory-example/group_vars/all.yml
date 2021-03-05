@@ -23,7 +23,7 @@ duplicati_enabled: true
 duplicati_extra_volumes:
   - "/home/myuser:/source/myuser:ro"
   - "{{ media_books_directory }}:/source/books:ro"
-  - "{{ paperless_export_directory }}:/source/documents:ro"
+  - "{{ paperless_ng_export_directory }}:/source/documents:ro"
 
 # Common Networking
 host_ip: 192.168.0.2
@@ -113,25 +113,6 @@ calibre_web_enabled: true
 # calibre
 calibre_enabled: true
 
-# paperless
-paperless_enabled: true
-paperless_consume_mail_host: imap.gmail.com
-paperless_consume_mail_port: "993"
-paperless_consume_mail_user: my-paperless-consumer-address@gmail.com
-paperless_consume_mail_pass: Celery-Vagrantly-Shawl-Parmesan
-# Only consume emails when they contain this secret
-paperless_consume_email_secret: Gallows-Divorcee-Monitor-Equator
-# Default- and supported OCR languages
-paperless_ocr_language: deu
-paperless_ocr_languages: deu eng
-# User and group IDs
-paperless_uid: "111"
-paperless_gid: "115"
-# Directories
-paperless_consume_directory: /mnt/storage/paperless/consume
-paperless_data_directory: "{{ base_data_directory }}/paperless"
-paperless_export_directory: "{{ paperless_data_directory }}/export"
-
 # paperless-ng
 paperless_ng_enabled: true
 paperless_ng_superuser_name: admin
@@ -154,7 +135,7 @@ nextcloud_extra_volumes:
   - "{{ media_audiobooks_directory }}:/external/audiobooks:ro"
   - "{{ media_magazines_directory }}:/external/magazines:ro"
   - "{{ media_comics_directory }}:/external/comics:ro"
-  - "{{ paperless_export_directory }}:/external/paperless:ro"
+  - "{{ paperless_data_directory }}:/external/paperless:ro"
   - "{{ shared_directory }}:/external/shared:rw"
 
 # unmanic
@@ -183,7 +164,7 @@ elkarbackup_extra_volumes:
   - "{{ media_audiobooks_directory }}:/sources/media/audiobooks:ro"
   - "{{ media_magazines_directory }}:/sources/media/magazines:ro"
   - "{{ media_comics_directory }}:/sources/media/comics:ro"
-  - "{{ paperless_export_directory }}:/sources/paperless:ro"
+  - "{{ paperless_ng_export_directory }}:/sources/paperless:ro"
 
 # netdata
 netdata_enabled: true
