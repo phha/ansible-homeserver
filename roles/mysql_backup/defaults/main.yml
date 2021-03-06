@@ -1,14 +1,36 @@
 ---
 # Defaults file for mysql_backup
 
+mysql_backup_compose: false
 mysql_backup_target_script: "{{ base_runtime_directory }}/common/target.sh"
 mysql_backup_container_image: "databack/mysql-backup:latest"
-mysql_backup_container_name: "{{ ansible_parent_role_names | first }}_db_backup"
-mysql_backup_server: "{{ ansible_parent_role_names | first }}_db"
-mysql_backup_network_name: "{{ ansible_parent_role_names | first }}"
+mysql_backup_container_name: "{{ role_name if mysql_backup_compose else ansible_parent_role_names | first }}_db_backup"
+mysql_backup_server: "{{ role_name if mysql_backup_compose else ansible_parent_role_names | first }}_db"
+mysql_backup_network_name: "{{ role_name if mysql_backup_compose else ansible_parent_role_names | first }}"
 mysql_backup_directory: "{{ db_backups_directory }}"
-mysql_backup_container_restart_policy: unless-stopped
+mysql_backup_container_restart_policy: "unless-stopped"
+mysql_backup_db_container_restart_policy: "unless-stopped"
 mysql_backup_cron: "{{ db_backups_cron }}"
 mysql_backup_nice: "true"
-mysql_backup_user: root
-mysql_backup_file_name: "{{ ansible_parent_role_names | first }}"
+mysql_backup_user: "root"
+mysql_backup_file_name: "{{ role_name if mysql_backup_compose else ansible_parent_role_names | first }}"
+
+mysql_backup_definition:
+  container_name: "{{ mysql_backup_container_name }}"
+  image: "{{ mysql_backup_container_image }}"
+  restart: "{{ mysql_backup_container_restart_policy }}"
+  environment:
+    - "TZ={{ timezone }}"
+    - "DB_SERVER={{ mysql_backup_server }}"
+    - "DB_USER={{ mysql_backup_user }}"
+    - "DB_PASS={{ mysql_backup_password }}"
+    - "DB_DUMP_CRON={{ mysql_backup_cron }}"
+    - "DB_DUMP_TARGET=/backups" 
+    - "NICE={{ mysql_backup_nice }}"
+  user: "0"
+  volumes:
+    - "{{ mysql_backup_directory }}:/backups"
+    - "{{ mysql_backup_target_script }}:/scripts.d/target.sh"
+    - "/etc/timezone:/etc/timezone:ro"
+  networks:
+    - "{{ mysql_backup_network_name }}"

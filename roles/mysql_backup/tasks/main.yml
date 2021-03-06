@@ -18,6 +18,7 @@
     mode: 0755
 
 - name: mysql backup docker container
+  when: mysql_backup_compose == false
   docker_container:
     name: "{{ mysql_backup_container_name }}"
     image: "{{ mysql_backup_container_image }}"
