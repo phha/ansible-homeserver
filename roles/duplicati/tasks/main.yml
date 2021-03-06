@@ -1,7 +1,7 @@
 ---
 # task file for duplicati
 
-- name: data directories
+- name: directories
   file:
     path: "{{ item }}"
     state: directory
@@ -12,28 +12,33 @@
     - "{{ duplicati_temporary_directory }}"
     - "{{ db_backups_directory }}"
 
-- name: docker container
-  docker_container:
-    name: "{{ duplicati_container_name }}"
-    image: "{{ duplicati_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: "{{ duplicati_restart_policy }}"
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      PUID: "{{ duplicati_pid }}"
-      PGID: "{{ duplicati_gid }}"
-    volumes: "{{ duplicati_all_volumes }}"
-    labels:
-      traefik.enable: "{{ duplicati_expose }}"
-      traefik.http.routers.duplicati.tls: "true"
-      traefik.http.routers.duplicati.rule: "{{ duplicati_traefik_rule }}"
-      traefik.http.routers.duplicati.middlewares: fauth@file
-      traefik.http.routers.duplicati.tls.certresolver: letsencrypt
-      traefik.http.services.duplicati.loadbalancer.server.port: "8200"
-    networks:
-      - name: "{{ traefik_network_name }}"
-      - name: "{{ mail_network_name }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ duplicati_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        mail:
+          external: true
+      services:
+        duplicati:
+          container_name: "{{ duplicati_container_name }}"
+          image: "{{ duplicati_container_image }}"
+          restart: "{{ duplicati_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ duplicati_pid }}"
+            - "PGID={{ duplicati_gid }}"
+          volumes: "{{ duplicati_all_volumes }}"
+          labels:
+            - "traefik.enable={{ duplicati_expose }}"
+            - "traefik.http.routers.duplicati.tls=true"
+            - "traefik.http.routers.duplicati.rule={{ duplicati_traefik_rule }}"
+            - "traefik.http.routers.duplicati.middlewares=fauth@file"
+            - "traefik.http.routers.duplicati.tls.certresolver=letsencrypt"
+            - "traefik.http.services.duplicati.loadbalancer.server.port=8200"
+          networks:
+            - traefik_public
+            - mail

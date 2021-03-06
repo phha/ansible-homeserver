@@ -1,3 +1,4 @@
+duplicati_project_name: duplicati
 duplicati_container_name: duplicati
 duplicati_container_image: linuxserver/duplicati:latest
 duplicati_restart_policy: unless-stopped
