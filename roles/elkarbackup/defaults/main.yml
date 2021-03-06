@@ -1,7 +1,9 @@
 ---
 # defaults file for elkarbackup
 
+elkarbackup_project_name: elkarbackup
 elkarbackup_container_name: elkarbackup
+elkarbackup_restart_policy: unless-stopped
 elkarbackup_container_image: "elkarbackup/elkarbackup:latest"
 elkarbackup_traefik_rule: "Host(`elkarbackup.{{ domain }}`)"
 elkarbackup_expose: "true"
