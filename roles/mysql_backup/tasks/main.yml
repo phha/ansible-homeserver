@@ -1,23 +1,23 @@
 ---
 # Task file for mysql_backup
 
-- name: mysql backup directory
+- name: backup directory
   file:
     path: "{{ mysql_backup_directory }}"
     state: directory
 
-- name: mysql backup target script directory
+- name: target script directory
   file:
     path: "{{ mysql_backup_target_script | dirname }}"
     state: directory
 
-- name: mysql backup target script template
+- name: target script template
   template:
     src: templates/mysql_backup_target.sh.j2
     dest: "{{ mysql_backup_target_script }}"
     mode: 0755
 
-- name: mysql backup docker container
+- name: docker container
   when: mysql_backup_compose == false
   docker_container:
     name: "{{ mysql_backup_container_name }}"

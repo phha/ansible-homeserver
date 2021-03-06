@@ -1,6 +1,7 @@
 ---
 # defaults file for gitea
 
+gitea_project_name: gitea
 gitea_container_name: gitea
 gitea_container_image: "gitea/gitea:1"
 gitea_traefik_rule: "Host(`gitea.{{ domain }}`)"

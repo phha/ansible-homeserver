@@ -2,14 +2,6 @@
 ---
 # task file for gitea
 
-- name: network
-  docker_network:
-    name: "{{ gitea_network_name }}"
-    attachable: true
-    state: present
-    driver: overlay
-    internal: true
-
 - name: directories
   file:
     path: "{{ item }}"
@@ -21,77 +13,81 @@
     - "{{ gitea_data_directory }}"
     - "{{ gitea_log_directory }}"
 
-- name: db docker container
-  docker_container:
-    name: "{{ gitea_db_container_name }}"
-    image: "{{ gitea_db_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: "{{ gitea_db_container_restart_policy }}"
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      MYSQL_ROOT_PASSWORD: "{{ gitea_mysql_root_password }}"
-      MYSQL_USER: gitea
-      MYSQL_DATABASE: gitea
-      MYSQL_PASSWORD: "{{ gitea_db_password }}"
-    volumes:
-      - "{{ gitea_db_directory }}/db:/var/lib/mysql"
-    networks:
-      - name: "{{ gitea_network_name }}"
-
-- name: docker container
-  docker_container:
-    name: "{{ gitea_container_name }}"
-    image: "{{ gitea_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: "{{ gitea_restart_policy }}"
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      APP_NAME: "{{ gitea_app_name }}"
-      RUN_MODE: "{{ gitea_run_mode }}"
-      DOMAIN: "{{ gitea_domain }}"
-      SSH_DOMAIN: "{{ gitea_ssh_domain }}"
-      SSH_PORT: "{{ gitea_ssh_port }}"
-      SSH_LISTEN_PORT: "{{ gitea_ssh_port }}"
-      ROOT_URL: "{{ gitea_root_url }}"
-      LFS_START_SERVER: "{{ gitea_lfs }}"
-      DISABLE_REGISTRATION: "{{ gitea_disable_registration }}"
-      REQUIRE_SIGNIN_VIEW: "{{ gitea_require_signin }}"
-      DB_TYPE: mysql
-      DB_HOST: "{{ gitea_db_container_name }}:3306"
-      DB_NAME: gitea
-      DB_USER: gitea
-      DB_PASSWD: "{{ gitea_db_password }}"
-      INSTALL_LOCK: "false"
-      SECRET_KEY: "{{ gitea_secret_key }}"
-      USER_UID: "{{ gitea_uid }}"
-      USER_GID: "{{ gitea_gid }}"
-    volumes:
-      - "{{ gitea_data_directory }}:/data"
-      - "{{ gitea_log_directory }}:/data/log"
-    ports:
-      - "{{ gitea_ssh_port }}:{{ gitea_ssh_port }}"
-    labels:
-      traefik.enable: "{{ gitea_expose }}"
-      traefik.http.routers.gitea.tls: "true"
-      traefik.http.routers.gitea.rule: "{{ gitea_traefik_rule }}"
-      traefik.http.routers.gitea.tls.certresolver: letsencrypt
-      traefik.http.services.gitea.loadbalancer.server.port: "3000"
-    networks:
-      - name: "{{ traefik_network_name }}"
-      - name: "{{ gitea_network_name }}"
-      - name: "{{ mail_network_name }}"
-
 - name: db backup
   include_role:
     name: mysql_backup
+    public: yes
   vars:
     mysql_backup_password: "{{ gitea_mysql_root_password }}"
-  when: gitea_db_backup_enabled
+    mysql_backup_compose: true
+
+- name: compose
+  docker_compose:
+    project_name: "{{ gitea_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        gitea:
+          attachable: true
+          driver: overlay
+          internal: true
+        traefik_public:
+          external: true
+        mail:
+          external: true
+      services:
+        db:
+          container_name: "{{ gitea_db_container_name }}"
+          image: "{{ gitea_db_container_image }}"
+          restart: "{{ gitea_db_container_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "MYSQL_ROOT_PASSWORD={{ gitea_mysql_root_password }}"
+            - "MYSQL_USER=gitea"
+            - "MYSQL_DATABASE=gitea"
+            - "MYSQL_PASSWORD={{ gitea_db_password }}"
+          volumes:
+            - "{{ gitea_db_directory }}/db:/var/lib/mysql"
+          networks:
+            - gitea
+        db_backup: "{{ mysql_backup_definition }}"
+        gitea:
+          container_name: "{{ gitea_container_name }}"
+          image: "{{ gitea_container_image }}"
+          restart: "{{ gitea_restart_policy }}"
+          environment:
+            - "TZ={ timezone }}"
+            - "APP_NAME={{ gitea_app_name }}"
+            - "RUN_MODE={{ gitea_run_mode }}"
+            - "DOMAIN={{ gitea_domain }}"
+            - "SSH_DOMAIN={{ gitea_ssh_domain }}"
+            - "SSH_PORT={{ gitea_ssh_port }}"
+            - "SSH_LISTEN_PORT={{ gitea_ssh_port }}"
+            - "ROOT_URL={{ gitea_root_url }}"
+            - "LFS_START_SERVER={{ gitea_lfs }}"
+            - "DISABLE_REGISTRATION={{ gitea_disable_registration }}"
+            - "REQUIRE_SIGNIN_VIEW={{ gitea_require_signin }}"
+            - "DB_TYPE=mysql"
+            - "DB_HOST={{ gitea_db_container_name }}:3306"
+            - "DB_NAME=gitea"
+            - "DB_USER=gitea"
+            - "DB_PASSWD={{ gitea_db_password }}"
+            - "INSTALL_LOCK=false"
+            - "SECRET_KEY={{ gitea_secret_key }}"
+            - "USER_UID={{ gitea_uid }}"
+            - "USER_GID={{ gitea_gid }}"
+          volumes:
+            - "{{ gitea_data_directory }}:/data"
+            - "{{ gitea_log_directory }}:/data/log"
+          ports:
+            - "{{ gitea_ssh_port }}:{{ gitea_ssh_port }}"
+          labels:
+            - "traefik.enable={{ gitea_expose }}"
+            - "traefik.http.routers.gitea.tls=true"
+            - "traefik.http.routers.gitea.rule={{ gitea_traefik_rule }}"
+            - "traefik.http.routers.gitea.tls.certresolver=letsencrypt"
+            - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+          networks:
+            - traefik_public
+            - gitea
+            - mail
