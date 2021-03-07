@@ -1,31 +1,31 @@
 ---
 # tasks file for homeassistant
 
-- name: Create home assistant data directory
+- name: data directory
   file:
     path: "{{ homeassistant_data_directory }}"
     state: directory
 
-- name: Start home assistant container
-  docker_container:
-    name: "{{ homeassistant_container_name }}"
-    image: "{{ homeassistant_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-    volumes:
-      - "{{ homeassistant_data_directory }}:/config"
-    labels:
-      traefik.enable: "{{ homeassistant_expose }}"
-      traefik.http.routers.homeassistant.tls: "true"
-      traefik.http.routers.homeassistant.rule: "{{ homeassistant_traefik_rule }}"
-      traefik.http.routers.homeassistant.tls.certresolver: letsencrypt
-      traefik.http.services.homeassistant.loadbalancer.server.port: "8123"
-    network_mode: host
-    etc_hosts:
-      "host.docker.internal": "{{ host_ip }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ homeassistant_project_name }}"
+    definition:
+      version: "3.5"
+      services:
+        homeassistant:
+          container_name: "{{ homeassistant_container_name }}"
+          image: "{{ homeassistant_container_image }}"
+          restart: "{{ homeassistant_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+          volumes:
+            - "{{ homeassistant_data_directory }}:/config"
+          labels:
+            - "traefik.enable={{ homeassistant_expose }}"
+            - "traefik.http.routers.homeassistant.tls=true"
+            - "traefik.http.routers.homeassistant.rule={{ homeassistant_traefik_rule }}"
+            - "traefik.http.routers.homeassistant.tls.certresolver=letsencrypt"
+            - "traefik.http.services.homeassistant.loadbalancer.server.port=8123"
+          network_mode: host
+          extra_hosts:
+            - "host.docker.internal:{{ host_ip }}"

@@ -1,9 +1,10 @@
 ---
 # defaults file for homeassistant
 
-homeassistant_enabled: false
+homeassistant_project_name: homeassistant
 homeassistant_container_name: homeassistant
 homeassistant_container_image: "homeassistant/home-assistant:latest"
+homeassistant_restart_policy: unless-stopped
 homeassistant_traefik_rule: "Host(`homeassistant.{{ domain }}`, `hass.{{ domain }}`)"
 homeassistant_expose: "true"
 homeassistant_data_directory: "{{ base_data_directory }}/homeassistant"
