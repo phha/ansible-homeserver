@@ -29,6 +29,7 @@
         elkarbackup:
           internal: true
           driver: overlay
+          name: elkarbackup
         traefik_public:
           external: true
         mail:
