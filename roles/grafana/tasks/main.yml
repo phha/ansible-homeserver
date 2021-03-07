@@ -1,7 +1,7 @@
 ---
 # task file for grafana
 
-- name: grafana directory
+- name: directory
   file:
     path: "{{ grafana_data_directory }}"
     state: directory
@@ -9,30 +9,35 @@
     group: "1"
     recurse: yes
 
-- name: grafana docker container
-  docker_container:
-    name: "{{ grafana_container_name }}"
-    image: "{{ grafana_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      GF_SECURITY_ADMIN_USER: "{{ grafana_admin_user }}"
-      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_pass }}"
-      GF_INSTALL_PLUGINS: "{{ grafana_plugins }}"
-    volumes:
-      - "{{ grafana_data_directory }}:/var/lib/grafana"
-    labels:
-      traefik.enable: "{{ grafana_expose }}"
-      traefik.http.routers.grafana.tls: "true"
-      traefik.http.routers.grafana.rule: "{{ grafana_traefik_rule }}"
-      traefik.http.routers.grafana.tls.certresolver: letsencrypt
-      traefik.http.routers.grafana.middlewares: frame-allow@file
-      traefik.http.services.grafana.loadbalancer.server.port: "3000"
-    networks:
-      - name: "{{ internal_network_name }}"
-      - name: "{{ traefik_network_name }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ grafana_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        influxdb:
+          external: true
+        traefik_public:
+          external: true
+      services:
+        grafana:
+          container_name: "{{ grafana_container_name }}"
+          image: "{{ grafana_container_image }}"
+          restart: "{{ grafana_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "GF_SECURITY_ADMIN_USER={{ grafana_admin_user }}"
+            - "GF_SECURITY_ADMIN_PASSWORD={{ grafana_admin_pass }}"
+            - "GF_INSTALL_PLUGINS={{ grafana_plugins }}"
+          volumes:
+            - "{{ grafana_data_directory }}:/var/lib/grafana"
+          labels:
+            - "traefik.enable={{ grafana_expose }}"
+            - "traefik.http.routers.grafana.tls=true"
+            - "traefik.http.routers.grafana.rule={{ grafana_traefik_rule }}"
+            - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.grafana.middlewares=frame-allow@file"
+            - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+          networks:
+            - influxdb
+            - traefik_public

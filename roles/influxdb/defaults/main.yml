@@ -1,13 +1,17 @@
 ---
 # defaults file for influxdb
 
+influxdb_project_name: influxdb
 influxdb_container_name: influxdb
 influxdb_container_image: "influxdb:latest"
 influxdb_data_directory: "{{ base_data_directory }}/influxdb"
+influxdb_restart_policy: unless-stopped
 
 influxdb_chronograf_container_name: chronograf
 influxdb_chronograf_container_image: "chronograf:latest"
 influxdb_chronograf_expose: "true"
 influxdb_chronograf_traefik_rule: "Host(`chronograf.{{ domain }}`)"
+influxdb_chronograf_restart_policy: unless-stopped
+
 influxdb_admin_user: admin
 influxdb_admin_pass: "{{ lookup('password', 'credentials/influxdb/admin_password length=64') }}"

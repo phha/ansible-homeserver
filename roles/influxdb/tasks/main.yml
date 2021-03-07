@@ -1,7 +1,7 @@
 ---
 # task file for influxdb
 
-- name: influxdb directories
+- name: directories
   file:
     path: "{{ item }}"
     state: directory
@@ -9,52 +9,53 @@
     - "{{ influxdb_data_directory }}/influxdb"
     - "{{ influxdb_data_directory }}/chronograf"
 
-- name: influxdb docker container
-  docker_container:
-    name: "{{ influxdb_container_name }}"
-    image: "{{ influxdb_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    ports:
-      - 8088:8088
-      - 8086:8086
-    env:
-      TZ: "{{ timezone }}"
-      INFLUXDB_DB: series
-      INFLUXDB_ADMIN_USER: "{{ influxdb_admin_user }}"
-      INFLUXDB_ADMIN_PASSWORD: "{{ influxdb_admin_pass }}"
-    volumes:
-      - "{{ influxdb_data_directory }}/influxdb:/var/lib/influxdb"
-    networks:
-      - name: "{{ internal_network_name }}"
-
-- name: chronograf docker container
-  docker_container:
-    name: "{{ influxdb_chronograf_container_name }}"
-    image: "{{ influxdb_chronograf_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      INFLUXDB_USERNAME: "{{ influxdb_admin_user }}"
-      INFLUXDB_PASSWORD: "{{ influxdb_admin_pass }}"
-    volumes:
-      - "{{ influxdb_data_directory }}/chronograf:/var/lib/chronograf"
-    labels:
-      traefik.enable: "{{ influxdb_chronograf_expose }}"
-      traefik.http.routers.influxdb.tls: "true"
-      traefik.http.routers.influxdb.rule: "{{ influxdb_chronograf_traefik_rule }}"
-      traefik.http.routers.influxdb.tls.certresolver: letsencrypt
-      traefik.http.routers.influxdb.middlewares: frame-allow@file
-      traefik.http.services.influxdb.loadbalancer.server.port: "8888"
-    networks:
-      - name: "{{ internal_network_name }}"
-      - name: "{{ traefik_network_name }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ influxdb_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        influxdb:
+          driver: overlay
+          internal: true
+          attachable: true
+          name: influxdb
+        traefik_public:
+          external: true
+      services:
+        influxdb:
+          container_name: "{{ influxdb_container_name }}"
+          image: "{{ influxdb_container_image }}"
+          restart: "{{ influxdb_restart_policy }}"
+          ports:
+            - 8088:8088
+            - 8086:8086
+          environment:
+            - "TZ={{ timezone }}"
+            - "INFLUXDB_DB=series"
+            - "INFLUXDB_ADMIN_USER={{ influxdb_admin_user }}"
+            - "INFLUXDB_ADMIN_PASSWORD={{ influxdb_admin_pass }}"
+          volumes:
+            - "{{ influxdb_data_directory }}/influxdb:/var/lib/influxdb"
+          networks:
+            - influxdb
+        chronograf:
+          container_name: "{{ influxdb_chronograf_container_name }}"
+          image: "{{ influxdb_chronograf_container_image }}"
+          restart: "{{ influxdb_chronograf_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "INFLUXDB_USERNAME={{ influxdb_admin_user }}"
+            - "INFLUXDB_PASSWORD={{ influxdb_admin_pass }}"
+          volumes:
+            - "{{ influxdb_data_directory }}/chronograf:/var/lib/chronograf"
+          labels:
+            - "traefik.enable={{ influxdb_chronograf_expose }}"
+            - "traefik.http.routers.influxdb.tls=true"
+            - "traefik.http.routers.influxdb.rule={{ influxdb_chronograf_traefik_rule }}"
+            - "traefik.http.routers.influxdb.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.influxdb.middlewares=frame-allow@file"
+            - "traefik.http.services.influxdb.loadbalancer.server.port=8888"
+          networks:
+            - influxdb
+            - traefik_public
