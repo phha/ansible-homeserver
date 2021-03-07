@@ -22,16 +22,17 @@
       networks:
         traefik_public:
           external: true
-        internal:
+        paperless_ng:
           driver: overlay
           internal: true
+          name: paperless_ng
       services:
         paperless_ng_redis:
           container_name: "{{ paperless_ng_redis_container_name }}"
           image: "{{ paperless_ng_redis_container_image }}"
           restart: "{{ paperless_ng_redis_restart_policy }}"
           networks:
-            - internal
+            - paperless_ng
         paperless_ng_postgres:
           container_name: "{{ paperless_ng_postgres_container_name }}"
           image: "{{ paperless_ng_postgres_container_image }}"
@@ -43,7 +44,7 @@
             - "POSTGRES_USER={{ paperless_ng_postgres_user }}"
             - "POSTGRES_PASSWORD={{ paperless_ng_postgres_password }}"
           networks:
-            - internal
+            - paperless_ng
         paperless_ng:
           container_name: "{{ paperless_ng_container_name }}"
           image: "{{ paperless_ng_container_image }}"
@@ -76,7 +77,7 @@
             - "traefik.http.routers.paperless_ng.middlewares=frame-allow@file"
             - "traefik.http.services.paperless_ng.loadbalancer.server.port=8000"
           networks:
-            - internal
+            - paperless_ng
             - traefik_public
         export:
           container_name: "{{ paperless_ng_export_container_name }}"
@@ -112,7 +113,7 @@
             - "{{ paperless_ng_consume_directory }}:/consume"
             - "{{ paperless_ng_export_directory }}:/export"
           networks:
-            - internal
+            - paperless_ng
 
 - name: wait
   pause:
