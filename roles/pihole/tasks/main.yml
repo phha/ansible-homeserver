@@ -1,6 +1,6 @@
 ---
 
-- name: Create pihole directories
+- name: directories
   file:
     path: "{{ item }}"
     state: directory
@@ -8,67 +8,66 @@
     - "{{ pihole_data_directory }}/config"
     - "{{ pihole_runtime_directory }}"
 
-- name: Copy resolv.conf
+- name: resolv.conf
   copy:
     src: resolv.conf
     force: no
     dest: "{{ pihole_data_directory }}/resolv.conf"
 
-- name: Create pihole log file
+- name: log file
   file:
     path: "{{ pihole_runtime_directory }}/pihole.log"
     state: touch
     force: no
     mode: 0600
 
-- name: Create extra hosts file
+- name: extra hosts file
   template:
     src: hosts.conf.j2
     dest: "{{ pihole_data_directory }}/hosts.conf"
 
-
-- name: Start pihole container
-  docker_container:
-    name: "{{ pihole_container_name }}"
-    image: "{{ pihole_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      ServerIP: "{{ host_ip }}"
-      VIRTUAL_HOST: "{{ domain }}"
-      # VIRTUAL_HOST: "pihole.{{ domain }}"
-      WEBPASSWORD: "{{ pihole_password }}"
-      DNSMASQ_LISTENING: all
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-    volumes:
-      - "{{ pihole_data_directory }}/config:/etc/pihole"
-      - "{{ pihole_runtime_directory }}/pihole.log:/var/log/pihole.log"
-      - "{{ pihole_data_directory }}/hosts.conf:/etc/dnsmasq.d/02-hosts.conf"
-      - "{{ pihole_data_directory }}/resolv.conf:/etc/resolv.conf"
-    labels:
-      traefik.enable: "{{ pihole_expose }}"
-      traefik.http.routers.pihole.tls: "true"
-      traefik.http.routers.pihole.tls.certresolver: letsencrypt
-      traefik.http.routers.pihole.rule: HostRegexp(`{any:.*}`)
-      traefik.http.services.pihole.loadbalancer.server.port: "80"
-      traefik.http.routers.pihole-admin.rule: "{{ pihole_traefik_rule }}"
-      traefik.http.middlewares.add-admin.addprefix.prefix: /admin
-      traefik.http.routers.pihole-admin.middlewares: frame-allow@file,add-admin@docker
-    network_mode: bridge
-    networks:
-      - name: "{{ internal_network_name }}"
-      - name: "{{ traefik_network_name }}"
-        aliases:
-          - "{{ pihole_container_name }}"
-    etc_hosts:
-      "host.docker.internal": "{{ host_ip }}"
-    dns_servers:
-      - 127.0.0.1
-      - 1.1.1.1
+- name: compose
+  docker_compose:
+    project_name: "{{ pihole_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+      services:
+        pihole:
+          container_name: "{{ pihole_container_name }}"
+          image: "{{ pihole_container_image }}"
+          restart: "{{ pihole_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "ServerIP={{ host_ip }}"
+            - "VIRTUAL_HOST={{ domain }}"
+            - "WEBPASSWORD={{ pihole_password }}"
+            - "DNSMASQ_LISTENING=all"
+          ports:
+            - "53:53/tcp"
+            - "53:53/udp"
+          volumes:
+            - "{{ pihole_data_directory }}/config:/etc/pihole"
+            - "{{ pihole_runtime_directory }}/pihole.log:/var/log/pihole.log"
+            - "{{ pihole_data_directory }}/hosts.conf:/etc/dnsmasq.d/02-hosts.conf"
+            - "{{ pihole_data_directory }}/resolv.conf:/etc/resolv.conf"
+          labels:
+            - "traefik.enable={{ pihole_expose }}"
+            - "traefik.http.routers.pihole.tls=true"
+            - "traefik.http.routers.pihole.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.pihole.rule=HostRegexp(`{any:.*}`)"
+            - "traefik.http.services.pihole.loadbalancer.server.port=80"
+            - "traefik.http.routers.pihole-admin.rule={{ pihole_traefik_rule }}"
+            - "traefik.http.middlewares.add-admin.addprefix.prefix=/admin"
+            - "traefik.http.routers.pihole-admin.middlewares=frame-allow@file,add-admin@docker"
+          networks:
+            traefik_public:
+              aliases:
+                - "{{ pihole_container_name }}"
+          extra_hosts:
+            "host.docker.internal": "{{ host_ip }}"
+          dns:
+            - 127.0.0.1
+            - 1.1.1.1
