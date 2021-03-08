@@ -1,40 +1,44 @@
 ---
 # task file for radarr
 
-- name: Create radarr data directory
+- name: data directory
   file:
     path: "{{ radarr_data_directory }}"
     state: directory
     owner: "{{ media_uid }}"
     group: "{{ media_gid }}"
 
-- name: radarr docker container
-  docker_container:
-    name: "{{ radarr_container_name }}"
-    image: "{{ radarr_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      PUID: "{{ media_uid }}"
-      PGID: "{{ media_gid }}"
-    volumes:
-      - "{{ radarr_data_directory }}:/config"
-      - "{{ media_movies_directory }}:/movies"
-      - "{{ shared_directory }}:/shared:ro"
-      - "{{ media_download_directory }}/complete/movies:/download"
-    labels:
-      traefik.enable: "{{ radarr_expose }}"
-      traefik.http.routers.radarr.tls: "true"
-      traefik.http.routers.radarr.rule: "{{ radarr_traefik_rule }}"
-      traefik.http.routers.radarr.middlewares: fauth@file
-      traefik.http.routers.radarr.tls.certresolver: letsencrypt
-      traefik.http.services.radarr.loadbalancer.server.port: "7878"
-    networks:
-      - name: "{{ traefik_network_name }}"
-      - name: "{{ internal_network_name }}"
-      - name: "{{ mail_network_name }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ radarr_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        mail:
+          external: true
+      services:
+        radarr:
+          container_name: "{{ radarr_container_name }}"
+          image: "{{ radarr_container_image }}"
+          restart: "{{ radarr_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ media_uid }}"
+            - "PGID={{ media_gid }}"
+          volumes:
+            - "{{ radarr_data_directory }}:/config"
+            - "{{ media_movies_directory }}:/movies"
+            - "{{ shared_directory }}:/shared:ro"
+            - "{{ media_download_directory }}/complete/movies:/download"
+          labels:
+            - "traefik.enable={{ radarr_expose }}"
+            - "traefik.http.routers.radarr.tls=true"
+            - "traefik.http.routers.radarr.rule={{ radarr_traefik_rule }}"
+            - "traefik.http.routers.radarr.middlewares=fauth@file"
+            - "traefik.http.routers.radarr.tls.certresolver=letsencrypt"
+            - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+          networks:
+            - traefik_public
+            - mail

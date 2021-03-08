@@ -1,8 +1,10 @@
 ---
 # defaults file for nzbhydra2
 
+nzbhydra2_project_name: nzbhydra2
 nzbhydra2_container_name: nzbhydra2
 nzbhydra2_container_image: "linuxserver/nzbhydra2:latest"
+nzbhydra2_restart_policy: unless-stopped
 nzbhydra2_traefik_rule: "Host(`nzbhydra2.{{ domain }}`)"
 nzbhydra2_expose: "true"
 nzbhydra2_data_directory: "{{ base_data_directory }}/nzbhydra2"

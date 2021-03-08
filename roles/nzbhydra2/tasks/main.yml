@@ -1,34 +1,34 @@
 ---
 # task file for nzbhydra2
 
-- name: Create nzbhydra2 data directory
+- name: data directory
   file:
     path: "{{ nzbhydra2_data_directory }}"
     state: directory
 
-- name: nzbhydra2 docker container
-  docker_container:
-    name: "{{ nzbhydra2_container_name }}"
-    image: "{{ nzbhydra2_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-    volumes:
-      - "{{ nzbhydra2_data_directory }}:/config"
-    labels:
-      traefik.enable: "{{ nzbhydra2_expose }}"
-      traefik.http.routers.nzbhydra2.tls: "true"
-      traefik.http.routers.nzbhydra2.rule: "{{ nzbhydra2_traefik_rule }}"
-      traefik.http.routers.nzbhydra2.middlewares: fauth@file
-      traefik.http.routers.nzbhydra2.tls.certresolver: letsencrypt
-      traefik.http.services.nzbhydra2.loadbalancer.server.port: "5076"
-    networks:
-      - name: "{{ traefik_network_name }}"
-        aliases:
-          - "{{ traefik_container_name }}"
-      - name: "{{ internal_network_name }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ nzbhydra2_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+      services:
+        nzbhydra2:
+          container_name: "{{ nzbhydra2_container_name }}"
+          image: "{{ nzbhydra2_container_image }}"
+          restart: "{{ nzbhydra2_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+          volumes:
+            - "{{ nzbhydra2_data_directory }}:/config"
+          labels:
+            - "traefik.enable={{ nzbhydra2_expose }}"
+            - "traefik.http.routers.nzbhydra2.tls=true"
+            - "traefik.http.routers.nzbhydra2.rule={{ nzbhydra2_traefik_rule }}"
+            - "traefik.http.routers.nzbhydra2.middlewares=fauth@file"
+            - "traefik.http.routers.nzbhydra2.tls.certresolver=letsencrypt"
+            - "traefik.http.services.nzbhydra2.loadbalancer.server.port=5076"
+          networks:
+            - traefik_public
