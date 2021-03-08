@@ -1,8 +1,10 @@
 ---
 # defaults file for nextcloud
 
+nextcloud_project_name: nextcloud
 nextcloud_container_name: nextcloud
 nextcloud_container_image: "nextcloud"
+nextcloud_restart_policy: unless-stopped
 nextcloud_traefik_rule: "Host(`nextcloud.{{ domain }}`)"
 nextcloud_expose: "true"
 nextcloud_runtime_directory: "{{ base_runtime_directory }}/nextcloud"
@@ -10,8 +12,11 @@ nextcloud_data_directory: "{{ base_data_directory }}/nextcloud"
 nextcloud_storage_directory: "{{ nextcloud_data_directory }}/data"
 nextcloud_mysql_root_password: "{{ lookup('password', 'credentials/nextcloud/mysql_root_password length=64') }}"
 nextcloud_mysql_password: "{{ lookup('password', 'credentials/nextcloud/mysql_password length=64') }}"
-nextcloud_network_name: nextcloud
+
 nextcloud_db_container_image: mariadb:10
+nextcloud_db_restart_policy: unless-stopped
+
+nextcloud_redis_restart_policy: unless-stopped
 nextcloud_redis_container_image: redis:alpine
 nextcloud_basic_volumes:
       - "{{ nextcloud_runtime_directory }}/html:/var/www/html"
@@ -20,4 +25,5 @@ nextcloud_basic_volumes:
       - "{{ nextcloud_storage_directory }}:/var/www/html/data"
 nextcloud_extra_volumes: []
 nextcloud_all_volumes: "{{ (nextcloud_basic_volumes + nextcloud_extra_volumes) | list }}"
-nextcloud_db_backup_enabled: "{{ db_backups_enabled }}"
+
+nextcloud_cron_restart_policy: unless-stopped
