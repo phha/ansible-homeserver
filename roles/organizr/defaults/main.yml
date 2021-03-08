@@ -1,8 +1,10 @@
 ---
 # defaults file for organizr
 
+organizr_project_name: organizr
 organizr_container_name: organizr
 organizr_container_image: "organizr/organizr"
+organizr_restart_policy: unless-stopped
 organizr_traefik_rule: "Host(`organizr.{{ domain }}`)"
 organizr_expose: "true"
 organizr_data_directory: "{{ base_data_directory }}/organizr"
