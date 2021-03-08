@@ -1,0 +1,7 @@
+- name: mqtt network
+  docker_network:
+    name: mqtt
+    attachable: true
+    state: present
+    driver: overlay
+    internal: false

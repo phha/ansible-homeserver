@@ -2,6 +2,8 @@
 # defaults file for nodered
 
 nodered_container_name: node-red
+nodered_project_name: node-red
+nodered_restart_policy: unless-stopped
 nodered_container_image: "nodered/node-red:latest"
 nodered_traefik_rule: "Host(`node-red.{{ domain }}`)"
 nodered_expose: "true"

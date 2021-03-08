@@ -1,55 +1,59 @@
 ---
 # tasks file for zigbee
 
-- name: Create zigbee2mqtt data directory
+- name: data directory
   file:
     path: "{{ zigbee2mqtt_data_directory }}"
     state: directory
 
-- name: Create zigbee2mqtt configuration
+- name: configuration
   template:
     src: configuration.yaml.j2
     dest: "{{ zigbee2mqtt_data_directory }}/configuration.yaml"
     force: no
 
-- name: Create zigbee2mqtt device file
+- name: device file
   file:
     path: "{{ zigbee2mqtt_data_directory }}/devices.yaml"
     state: touch
     mode: 0600
 
-- name: Create zigbee2mqtt group file
+- name: group file
   file:
     path: "{{ zigbee2mqtt_data_directory }}/groups.yaml"
     state: touch
     mode: 0600
 
-- name: Start zigbee2mqtt container
-  docker_container:
-    name: "{{ zigbee2mqtt_container_name }}"
-    image: "{{ zigbee2mqtt_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    ports:
-      2233:2233
-    env:
-      TZ: "{{ timezone }}"
-    volumes:
-      - "{{ zigbee2mqtt_data_directory }}:/app/data"
-      - "/run/udev:/run/udev:ro"
-    devices:
-      - "{{ zigbee_device }}"
-    labels:
-      traefik.enable: "{{ zigbee2mqtt_expose }}"
-      traefik.http.routers.zigbee2mqtt.tls: "true"
-      traefik.http.routers.zigbee2mqtt.rule: "{{ zigbee2mqtt_traefik_rule }}"
-      traefik.http.routers.zigbee2mqtt.middlewares: fauth@file
-      traefik.http.routers.zigbee2mqtt.tls.certresolver: letsencrypt
-      traefik.http.services.zigbee2mqtt.loadbalancer.server.port: "2233"
-    networks:
-      - name: "{{ internal_network_name }}"
-    privileged: true
+- name: compose
+  docker_compose:
+    project_name: "{{ zigbee2mqtt_project_name }}"
+    definition:
+      version: "3.5"
+      networks: 
+        mqtt:
+          external: true
+        traefik_public:
+          external: true
+      services:
+        zigbee2mqtt:
+          container_name: "{{ zigbee2mqtt_container_name }}"
+          image: "{{ zigbee2mqtt_container_image }}"
+          restart: "{{ zigbee2mqtt_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+          volumes:
+            - "{{ zigbee2mqtt_data_directory }}:/app/data"
+            - "/run/udev:/run/udev:ro"
+          devices:
+            - "{{ zigbee_device }}"
+          labels:
+            - "traefik.enable={{ zigbee2mqtt_expose }}"
+            - "traefik.http.routers.zigbee2mqtt.tls=true"
+            - "traefik.http.routers.zigbee2mqtt.rule={{ zigbee2mqtt_traefik_rule }}"
+            - "traefik.http.routers.zigbee2mqtt.middlewares=fauth@file"
+            - "traefik.http.routers.zigbee2mqtt.tls.certresolver=letsencrypt"
+            - "traefik.http.services.zigbee2mqtt.loadbalancer.server.port=2233"
+          networks:
+            - traefik_public
+            - mqtt
+          privileged: true

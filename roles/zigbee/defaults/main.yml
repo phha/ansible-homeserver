@@ -4,6 +4,8 @@
 zigbee2mqtt_data_directory: "{{ base_data_directory }}/zigbee2mqtt"
 zigbee2mqtt_container_image: "koenkk/zigbee2mqtt:latest"
 zigbee2mqtt_container_name: zigbee2mqtt
+zigbee2mqtt_project_name: zigbee2mqtt
+zigbee2mqtt_restart_policy: unless-stopped
 zigbee2mqtt_traefik_rule: "Host(`zigbee.{{ domain }}`)"
 zigbee2mqtt_expose: "true"
 zigbee2mqtt_disable_led: true

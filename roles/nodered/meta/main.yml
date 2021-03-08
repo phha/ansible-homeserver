@@ -1,2 +1,4 @@
 dependencies:
   - traefik
+  - mqtt_network
+  - mail

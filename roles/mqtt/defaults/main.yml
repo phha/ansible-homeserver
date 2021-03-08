@@ -5,3 +5,5 @@ mosquitto_data_directory: "{{ base_data_directory }}/mosquitto"
 mosquitto_runtime_directory: "{{ base_runtime_directory }}/mosquitto"
 mosquitto_container_image: "eclipse-mosquitto"
 mosquitto_container_name: mosquitto
+mosquitto_project_name: mosquitto
+mosquitto_restart_policy: unless-stopped
