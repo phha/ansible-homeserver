@@ -1,9 +1,10 @@
 ---
 # defaults file for portainer
 
-portainer_enabled: false
+portainer_project_name: portainer
 portainer_container_name: portainer
 portainer_container_image: "portainer/portainer-ce:latest"
+portainer_restart_policy: unless-stopped
 portainer_traefik_rule: "Host(`portainer.{{ domain }}`)"
 portainer_expose: "true"
 portainer_data_directory: "{{ base_data_directory }}/portainer"
