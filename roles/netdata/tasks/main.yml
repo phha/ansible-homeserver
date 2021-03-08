@@ -1,7 +1,7 @@
 ---
 # task file for netdata
 
-- name: netdata data directory
+- name: directory
   file:
     path: "{{ netdata_data_directory }}/etc"
     state: directory
@@ -14,34 +14,40 @@
     name: docker
   register: docker_group
 
-- name: netdata docker container
-  docker_container:
-    name: "{{ netdata_container_name }}"
-    image: "{{ netdata_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      PGID: "{{ docker_group.gid }}"
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - "{{ docker_socket_path }}:{{ docker_socket_path }}:ro"
-    capabilities:
-      - SYS_PTRACE
-    security_opts:
-      - apparmor:unconfined
-    labels:
-      traefik.enable: "{{ netdata_expose }}"
-      traefik.http.routers.netdata.tls: "true"
-      traefik.http.routers.netdata.rule: "{{ netdata_traefik_rule }}"
-      traefik.http.routers.netdata.middlewares: fauth@file
-      traefik.http.routers.netdata.tls.certresolver: letsencrypt
-      traefik.http.services.netdata.loadbalancer.server.port: "19999"
-    networks:
-      - name: "{{ traefik_network_name }}"
-      - name: "{{ mail_network_name }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ netdata_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        mail:
+          external: true
+        traefik_public:
+          external: true
+      services:
+        netdata:
+          container_name: "{{ netdata_container_name }}"
+          image: "{{ netdata_container_image }}"
+          restart: "{{ netdata_restart_policy }}"
+          hostname: "{{ domain }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PGID={{ docker_group.gid }}"
+          volumes:
+            - /proc:/host/proc:ro
+            - /sys:/host/sys:ro
+            - "{{ docker_socket_path }}:{{ docker_socket_path }}:ro"
+          cap_add:
+            - SYS_PTRACE
+          security_opt:
+            - apparmor:unconfined
+          labels:
+            - "traefik.enable={{ netdata_expose }}"
+            - "traefik.http.routers.netdata.tls=true"
+            - "traefik.http.routers.netdata.rule={{ netdata_traefik_rule }}"
+            - "traefik.http.routers.netdata.middlewares=fauth@file"
+            - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
+            - "traefik.http.services.netdata.loadbalancer.server.port=19999"
+          networks:
+            - mail
+            - traefik_public
