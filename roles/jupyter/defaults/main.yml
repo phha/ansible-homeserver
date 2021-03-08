@@ -1,6 +1,7 @@
 ---
 # defaults file for jupyter
 
+jupyter_project_name: jupyter
 jupyter_container_name: jupyter
 jupyter_container_image: jupyter/tensorflow-notebook:latest
 jupyter_restart_policy: unless-stopped
