@@ -186,6 +186,11 @@ jupyter_enabled: true
 
 # Diun
 diun_enabled: true
+# diun_notifier:
+#   telegram:
+#     token: "abcd:1234"
+#     chatIDs:
+#       - "1337"
 
 # Samba
 samba_enabled: true
