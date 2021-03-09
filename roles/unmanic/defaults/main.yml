@@ -1,9 +1,11 @@
 ---
 # defaults file for unmanic
 
+unmanic_project_name: unmanic
 unmanic_container_name: unmanic
 unmanic_container_image: "josh5/unmanic:latest"
 unmanic_traefik_rule: "Host(`unmanic.{{ domain }}`)"
+unmanic_restart_policy: unless-stopped
 unmanic_expose: "true"
 unmanic_data_directory: "{{ base_data_directory }}/unmanic"
 unmanic_runtime_directory: "{{ base_runtime_directory }}/unmanic"
