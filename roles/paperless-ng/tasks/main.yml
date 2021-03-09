@@ -26,6 +26,7 @@
           driver: overlay
           internal: true
           name: paperless_ng
+          attachable: false
       services:
         paperless_ng_redis:
           container_name: "{{ paperless_ng_redis_container_name }}"

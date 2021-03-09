@@ -28,7 +28,8 @@
       version: "3.5"
       networks:
         gitea:
-          attachable: true
+          name: gitea
+          attachable: false
           driver: overlay
           internal: true
         traefik_public:
