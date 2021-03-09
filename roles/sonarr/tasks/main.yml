@@ -1,38 +1,42 @@
 ---
 # task file for sonarr
 
-- name: Create sonarr data directory
+- name: data directory
   file:
     path: "{{ sonarr_data_directory }}"
     state: directory
 
-- name: sonarr docker container
-  docker_container:
-    name: "{{ sonarr_container_name }}"
-    image: "{{ sonarr_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      PUID: "{{ media_uid }}"
-      PGID: "{{ media_gid }}"
-    volumes:
-      - "{{ sonarr_data_directory }}:/config"
-      - "{{ media_series_directory }}:/series"
-      - "{{ shared_directory }}:/shared:ro"
-      - "{{ media_download_directory }}/complete/dronetv:/download"
-    labels:
-      traefik.enable: "{{ sonarr_expose }}"
-      traefik.http.routers.sonarr.tls: "true"
-      traefik.http.routers.sonarr.rule: "{{ sonarr_traefik_rule }}"
-      traefik.http.routers.sonarr.middlewares: fauth@file
-      traefik.http.routers.sonarr.tls.certresolver: letsencrypt
-      traefik.http.services.sonarr.loadbalancer.server.port: "8989"
-    networks:
-      - name: "{{ traefik_network_name }}"
-      - name: "{{ internal_network_name }}"
-      - name: "{{ mail_network_name }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ sonarr_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        mail:
+          external: true
+      services:
+        sonarr:
+          container_name: "{{ sonarr_container_name }}"
+          image: "{{ sonarr_container_image }}"
+          restart: "{{ sonarr_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ media_uid }}"
+            - "PGID={{ media_gid }}"
+          volumes:
+            - "{{ sonarr_data_directory }}:/config"
+            - "{{ media_series_directory }}:/series"
+            - "{{ shared_directory }}:/shared:ro"
+            - "{{ media_download_directory }}/complete/dronetv:/download"
+          labels:
+            - "traefik.enable={{ sonarr_expose }}"
+            - "traefik.http.routers.sonarr.tls=true"
+            - "traefik.http.routers.sonarr.rule={{ sonarr_traefik_rule }}"
+            - "traefik.http.routers.sonarr.middlewares=fauth@file"
+            - "traefik.http.routers.sonarr.tls.certresolver=letsencrypt"
+            - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+          networks:
+            - traefik_public
+            - mail
