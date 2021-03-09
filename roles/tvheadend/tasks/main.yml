@@ -1,7 +1,7 @@
 ---
 # tasks file for tvheadend
 
-- name: Create TVHeadend directories
+- name: directories
   file:
     path: "{{ item }}"
     state: directory
@@ -11,46 +11,46 @@
     - "{{ tvheadend_timeshift_directory }}"
     - "{{ tvheadend_tvicons_directory }}"
 
-- name: Copy TVHeadend UI extensions
+- name: UI extensions
   copy:
     src: mobile
     dest: "{{ tvheadend_base_data_directory }}"
     force: no
 
-- name: Start TVHeadend container
-  docker_container:
-    name: "{{ tvheadend_container_name }}"
-    image: "{{ tvheadend_container_image }}"
-    recreate: true
-    state: started
-    container_default_behavior: no_defaults
-    networks_cli_compatible: no
-    restart_policy: unless-stopped
-    pull: "{{ 'upgrade' in ansible_run_tags }}"
-    env:
-      TZ: "{{ timezone }}"
-      PUID: "{{ tvheadend_uid }}"
-      PGID: "{{ tvheadend_gid }}"
-      RUN_OPTS: --noacl
-    volumes:
-      - "{{ tvheadend_config_directory }}:/config"
-      - "{{ tvheadend_recordings_directory }}:/recordings"
-      - "{{ tvheadend_timeshift_directory }}:/timeshift"
-      - "{{ tvheadend_tvicons_directory }}:/tvicons:ro"
-      - "{{ tvheadend_base_data_directory }}/mobile:/usr/share/tvheadend/src/webui/static/mobile:ro"
-    labels:
-      traefik.enable: "{{ tvheadend_expose }}"
-      traefik.http.routers.tvheadend.tls: "true"
-      traefik.http.routers.tvheadend.rule: "{{ tvheadend_traefik_rule }}"
-      traefik.http.routers.tvheadend.middlewares: fauth@file
-      traefik.http.routers.tvheadend.tls.certresolver: letsencrypt
-      traefik.http.services.tvheadend.loadbalancer.server.port: "9981"
-      traefik.http.routers.xmltv.tls: "true"
-      traefik.http.routers.xmltv.rule: "{{ xmltv_traefik_rule }}"
-      traefik.http.routers.xmltv.middlewares: xmltv-add-prefix@docker
-      traefik.http.routers.xmltv.tls.certresolver: letsencrypt
-      traefik.http.middlewares.xmltv-add-prefix.addprefix.prefix: /xmltv/channels
-      traefik.http.routers.xmltv.service: tvheadend
-    network_mode: host
-    etc_hosts:
-      "host.docker.internal": "{{ host_ip }}"
+- name: compose
+  docker_compose:
+    project_name: "{{ tvheadend_project_name }}"
+    definition:
+      version: "3.5"
+      services:
+        tvheadend:
+          container_name: "{{ tvheadend_container_name }}"
+          image: "{{ tvheadend_container_image }}"
+          restart: "{{ tvheadend_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ tvheadend_uid }}"
+            - "PGID={{ tvheadend_gid }}"
+            - "RUN_OPTS=--noacl"
+          volumes:
+            - "{{ tvheadend_config_directory }}:/config"
+            - "{{ tvheadend_recordings_directory }}:/recordings"
+            - "{{ tvheadend_timeshift_directory }}:/timeshift"
+            - "{{ tvheadend_tvicons_directory }}:/tvicons:ro"
+            - "{{ tvheadend_base_data_directory }}/mobile:/usr/share/tvheadend/src/webui/static/mobile:ro"
+          labels:
+            - "traefik.enable={{ tvheadend_expose }}"
+            - "traefik.http.routers.tvheadend.tls=true"
+            - "traefik.http.routers.tvheadend.rule={{ tvheadend_traefik_rule }}"
+            - "traefik.http.routers.tvheadend.middlewares=fauth@file"
+            - "traefik.http.routers.tvheadend.tls.certresolver=letsencrypt"
+            - "traefik.http.services.tvheadend.loadbalancer.server.port=9981"
+            - "traefik.http.routers.xmltv.tls=true"
+            - "traefik.http.routers.xmltv.rule={{ xmltv_traefik_rule }}"
+            - "traefik.http.routers.xmltv.middlewares=xmltv-add-prefix@docker"
+            - "traefik.http.routers.xmltv.tls.certresolver=letsencrypt"
+            - "traefik.http.middlewares.xmltv-add-prefix.addprefix.prefix=/xmltv/channels"
+            - "traefik.http.routers.xmltv.service=tvheadend"
+          network_mode: host
+          extra_hosts:
+            "host.docker.internal": "{{ host_ip }}"
