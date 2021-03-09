@@ -1,13 +1,17 @@
 ---
 # defaults file for traefik
 
+traefik_project_name: traefik
+
 duckdns_container_name: duckdns
 duckdns_container_image: "linuxserver/duckdns:latest"
+duckdns_restart_policy: unless-stopped
 
 boreale_container_name: boreale
 boreale_container_image: "phha/boreale:latest"
 boreale_page_title: Authentication
 boreale_data_directory: "{{ base_data_directory }}/boreale"
+boreale_restart_policy: unless-stopped
 
 traefik_container_name: traefik
 traefik_container_image: "traefik:latest"
@@ -15,6 +19,7 @@ traefik_data_directory: "{{ base_data_directory }}/traefik"
 traefik_log_level: INFO
 traefik_network_name: traefik_public
 traefik_expose: "true"
+traefik_restart_policy: unless-stopped
 
 letsencrypt_email_address: "{{ email_address }}"
 
