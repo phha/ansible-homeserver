@@ -1,0 +1,9 @@
+{
+  "roles/**/tasks/*.yml": {"alternate": "roles/{dirname}/defaults/{basename}.yml"},
+  "roles/**/defaults/*.yml": {"alternate": "roles/{dirname}/tasks/{basename}.yml"},
+  "roles/*/tasks/main.yml": {"type": "tasks"},
+  "roles/*/defaults/main.yml": {"type": "defaults"},
+  "roles/*/meta/main.yml": {"type": "meta"},
+  "inventory-example/group_vars/all.yml": {"type": "vars"},
+  "roles/*/vars/main.yml": {"type": "vars"}
+}
