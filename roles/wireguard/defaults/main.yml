@@ -1,6 +1,7 @@
 ---
 # defaults file for wireguard
 
+wireguard_project_name: wireguard
 wireguard_container_name: wireguard
 wireguard_container_image: "ghcr.io/linuxserver/wireguard"
 wireguard_restart_policy: unless-stopped
