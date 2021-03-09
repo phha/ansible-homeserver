@@ -1,8 +1,10 @@
 ---
 # defaults file for sabnzbd
 
+sabnzbd_project_name: sabnzbd
 sabnzbd_container_name: sabnzbd
 sabnzbd_container_image: "linuxserver/sabnzbd:latest"
+sabnzbd_restart_policy: unless-stopped
 sabnzbd_traefik_rule: "Host(`sabnzbd.{{ domain }}`)"
 sabnzbd_expose: "true"
 sabnzbd_data_directory: "{{ base_data_directory }}/sabnzbd"
