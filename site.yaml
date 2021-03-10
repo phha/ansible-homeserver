@@ -5,9 +5,6 @@
   environment:
     DOCKER_TIMEOUT: "600"
   roles:
-    - role: traefik
-      tags:
-        - traefik
     - role: homeassistant
       tags:
         - homeassistant
