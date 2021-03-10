@@ -16,6 +16,8 @@
           container_name: "{{ mail_container_name }}"
           image: "{{ mail_container_image }}"
           restart: "{{ mail_restart_policy }}"
+          healthcheck:
+            disable: true
           environment:
             - "TZ={{ timezone }}"
             - "RELAY_MYHOSTNAME=mail.{{ domain }}"
