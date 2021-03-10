@@ -12,7 +12,13 @@
     - "{{ paperless_ng_media_directory }}"
     - "{{ paperless_ng_consume_directory }}"
     - "{{ paperless_ng_export_directory }}"
-    - "{{ paperless_ng_db_directory }}"
+
+- name: postgresql directory
+  file:
+    path: "{{ paperless_ng_db_directory }}"
+    state: directory
+    owner: "999"
+    group: "999"
 
 - name: compose
   docker_compose:
