@@ -54,7 +54,7 @@
         attachable: true
         state: present
         driver: overlay
-        internal: true
+        internal: false
 
     - name: Update facts
       setup:
