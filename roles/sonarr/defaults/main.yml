@@ -3,7 +3,7 @@
 
 sonarr_project_name: sonarr
 sonarr_container_name: sonarr
-sonarr_container_image: "linuxserver/sonarr:preview"
+sonarr_container_image: "linuxserver/sonarr:latest"
 sonarr_restart_policy: unless-stopped
 sonarr_traefik_rule: "Host(`sonarr.{{ domain }}`)"
 sonarr_expose: "true"
