@@ -1,0 +1,15 @@
+---
+# defaults file for firefox
+
+firefox_project_name: firefox
+firefox_container_name: firefox
+firefox_container_image: "jlesage/firefox:latest"
+firefox_restart_policy: unless-stopped
+firefox_traefik_rule: "Host(`firefox.{{ domain }}`)"
+firefox_expose: "true"
+firefox_data_directory: "{{ base_data_directory }}/firefox"
+firefox_download_directory: "{{ shared_directory }}/firefox"
+firefox_display_width: "1280"
+firefox_display_height: "800"
+firefox_uid: "{{ media_uid }}"
+firefox_gid: "{{ media_gid }}"

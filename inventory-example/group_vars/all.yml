@@ -196,6 +196,9 @@ diun_enabled: true
 wallabag_enabled: true
 wallabag_admin_password: Nucleus-Gathering-Glacier-Petted
 
+# Firefox
+firefox_enabled: true
+
 # Samba
 samba_enabled: true
 samba_shares_root: "{{ base_directory }}/samba_shares"

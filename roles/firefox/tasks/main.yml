@@ -1,0 +1,47 @@
+---
+# task file for firefox
+
+- name: directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ firefox_uid }}"
+    group: "{{ firefox_gid }}"
+  loop:
+    - "{{ firefox_data_directory }}"
+    - "{{ firefox_download_directory }}"
+
+- name: compose
+  docker_compose:
+    project_name: "{{ firefox_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+      services:
+        firefox:
+          container_name: "{{ firefox_container_name }}"
+          image: "{{ firefox_container_image }}"
+          restart: "{{ firefox_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "USER_ID={{ firefox_uid }}"
+            - "GROUP_ID={{ firefox_gid }}"
+            - "KEEP_APP_RUNNING=1"
+            - "DISPLAY_WIDTH={{ firefox_display_width }}"
+            - "DISPLAY_HEIGHT={{ firefox_display_height }}"
+            - "ENABLE_CJK_FONT=1"
+          volumes:
+            - "/dev/shm:/dev/shm"
+            - "{{ firefox_data_directory }}:/config"
+            - "{{ firefox_download_directory }}:/config/downloads"
+          labels:
+            - "traefik.enable={{ firefox_expose }}"
+            - "traefik.http.routers.firefox.tls=true"
+            - "traefik.http.routers.firefox.rule={{ firefox_traefik_rule }}"
+            - "traefik.http.routers.firefox.middlewares=fauth@file"
+            - "traefik.http.routers.firefox.tls.certresolver=letsencrypt"
+            - "traefik.http.services.firefox.loadbalancer.server.port=5800"
+          networks:
+            - traefik_public

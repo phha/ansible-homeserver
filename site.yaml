@@ -154,6 +154,10 @@
       tags:
         - wallabag
       when: (wallabag_enabled | default(False))
+    - role: firefox
+      tags:
+        - firefox
+      when: (firefox_enabled | default(False))
     - role: mail
       tags:
         - mail
