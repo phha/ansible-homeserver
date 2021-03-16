@@ -1,0 +1,25 @@
+---
+# defaults file for wallabag
+
+wallabag_project_name: wallabag
+wallabag_container_name: wallabag
+wallabag_container_image: "wallabag/wallabag:latest"
+wallabag_restart_policy: unless-stopped
+wallabag_traefik_rule: "Host(`wallabag.{{ domain }}`)"
+wallabag_domain_name: "https://wallabag.{{ domain }}"
+wallabag_expose: "true"
+wallabag_data_directory: "{{ base_data_directory }}/wallabag"
+wallabag_runtime_directory: "{{ base_runtime_directory }}/wallabag"
+wallabag_mysql_root_password: "{{ lookup('password', 'credentials/wallabag/mysql_root_password length=64') }}"
+wallabag_mysql_password: "{{ lookup('password', 'credentials/wallabag/mysql_password length=64') }}"
+wallabag_allow_public_registration: "false"
+wallabag_secret: "{{ lookup('password', 'credentials/wallabag/secret length=64') }}"
+wallabag_admin_password: "{{ lookup('password', 'credentials/wallabag/admin_password length=64') }}"
+
+wallabag_db_container_name: "{{ wallabag_container_name }}_db"
+wallabag_db_container_image: "mariadb:10"
+wallabag_db_restart_policy: unless-stopped
+
+wallabag_redis_container_name: "{{ wallabag_container_name }}_redis"
+wallabag_redis_container_image: "redis:alpine"
+wallabag_redis_restart_policy: unless-stopped

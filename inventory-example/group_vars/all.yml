@@ -192,6 +192,10 @@ diun_enabled: true
 #     chatIDs:
 #       - "1337"
 
+# Wallabag
+wallabag_enabled: true
+wallabag_admin_password: Nucleus-Gathering-Glacier-Petted
+
 # Samba
 samba_enabled: true
 samba_shares_root: "{{ base_directory }}/samba_shares"

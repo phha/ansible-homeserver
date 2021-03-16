@@ -1,0 +1,100 @@
+---
+# task file for wallabag
+
+- name: directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ wallabag_data_directory }}/data"
+    - "{{ wallabag_data_directory }}/images"
+    - "{{ wallabag_runtime_directory }}/db"
+    - "{{ wallabag_runtime_directory }}/redis"
+
+- name: db backup
+  include_role:
+    name: mysql_backup
+    public: yes
+  vars:
+    mysql_backup_password: "{{ wallabag_mysql_root_password }}"
+    mysql_backup_compose: true
+
+- name: compose
+  docker_compose:
+    project_name: "{{ wallabag_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        mail:
+          external: true
+        wallabag:
+          driver: overlay
+          name: wallabag
+          internal: true
+      services:
+        wallabag:
+          container_name: "{{ wallabag_container_name }}"
+          image: "{{ wallabag_container_image }}"
+          restart: "{{ wallabag_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "SYMFONY__ENV__DOMAIN_NAME={{ wallabag_domain_name }}"
+            - "MYSQL_ROOT_PASSWORD={{ wallabag_mysql_root_password }}"
+            - "SYMFONY__ENV__DATABASE_DRIVER=pdo_mysql"
+            - "SYMFONY__ENV__DATABASE_HOST={{ wallabag_db_container_name }}"
+            - "SYMFONY__ENV__DATABASE_PORT=3306"
+            - "SYMFONY__ENV__DATABASE_NAME=wallabag"
+            - "SYMFONY__ENV__DATABASE_USER=wallabag"
+            - "SYMFONY__ENV__DATABASE_PASSWORD={{ wallabag_mysql_password }}"
+            - "SYMFONY__ENV__DATABASE_CHARSET=utf8mb4"
+            - "SYMFONY__ENV__SECRET={{ wallabag_secret }}"
+            - "SYMFONY__ENV__MAILER_HOST={{ mail_container_name }}"
+            - "SYMFONY__ENV__FROM_EMAIL={{ email_address }}"
+            - "SYMFONY__ENV__REDIS_HOST={{ wallabag_redis_container_name }}"
+            - "SYMFONY__ENV__FOSUSER_REGISTRATION={{ wallabag_allow_public_registration }}"
+          volumes:
+            - "{{ wallabag_data_directory }}/data:/var/www/wallabag/data"
+            - "{{ wallabag_data_directory }}/images:/var/www/wallabag/web/assets/images"
+          labels:
+            - "traefik.enable={{ wallabag_expose }}"
+            - "traefik.http.routers.wallabag.tls=true"
+            - "traefik.http.routers.wallabag.rule={{ wallabag_traefik_rule }}"
+            - "traefik.http.routers.wallabag.tls.certresolver=letsencrypt"
+            - "traefik.http.services.wallabag.loadbalancer.server.port=80"
+          networks:
+            - wallabag
+            - traefik_public
+            - mail
+        db:
+          container_name: "{{ wallabag_db_container_name }}"
+          image: "{{ wallabag_db_container_image }}"
+          restart: "{{ wallabag_db_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "MYSQL_ROOT_PASSWORD={{ wallabag_mysql_root_password }}"
+          volumes:
+            - "{{ wallabag_runtime_directory }}/db:/var/lib/mysql"
+          networks:
+            - wallabag
+        redis:
+          container_name: "{{ wallabag_redis_container_name }}"
+          image: "{{ wallabag_redis_container_image }}"
+          restart: "{{ wallabag_redis_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+          networks:
+            - wallabag
+
+- name: wait
+  pause:
+    seconds: 10
+
+- name: admin password
+  expect:
+    command: "docker exec -i {{ wallabag_container_name }} /var/www/wallabag/bin/console --env=prod fos:user:change-password"
+    responses:
+      "Please give the username:": "wallabag"
+      "Please enter the new password:": "{{ wallabag_admin_password }}"
+  no_log: true

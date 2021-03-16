@@ -150,6 +150,10 @@
       tags:
         - diun
       when: (diun_enabled | default(False))
+    - role: wallabag
+      tags:
+        - wallabag
+      when: (wallabag_enabled | default(False))
     - role: mail
       tags:
         - mail
