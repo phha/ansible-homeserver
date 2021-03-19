@@ -135,7 +135,7 @@ nextcloud_extra_volumes:
   - "{{ media_audiobooks_directory }}:/external/audiobooks:ro"
   - "{{ media_magazines_directory }}:/external/magazines:ro"
   - "{{ media_comics_directory }}:/external/comics:ro"
-  - "{{ paperless_data_directory }}:/external/paperless:ro"
+  - "{{ paperless_ng_media_directory }}:/external/paperless:ro"
   - "{{ shared_directory }}:/external/shared:rw"
 
 # unmanic
