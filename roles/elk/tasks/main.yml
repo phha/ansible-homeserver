@@ -1,0 +1,100 @@
+
+---
+# task file for elk
+
+- name: directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+  loop:
+    - "{{ elk_elasticsearch_data_directory }}"
+    - "{{ elk_logstash_config_directory }}"
+
+- name: logstash config
+  template:
+    src: logstash.conf.j2
+    dest: "{{ elk_logstash_config_directory }}/logstash.conf"
+
+- name: compose
+  docker_compose:
+    project_name: "{{ elk_project_name }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        mail:
+          external: true
+        internal:
+          external: true
+      services:
+        elasticsearch:
+          container_name: "{{ elk_elasticsearch_container_name }}"
+          image: "{{ elk_elasticsearch_container_image }}" 
+          restart: "{{ elk_elasticsearch_restart_policy }}"
+          environment:
+            - LOGSPOUT=ignore
+            - http.host=0.0.0.0
+            - transport.host=localhost
+            - network.host=0.0.0.0
+            - ES_JAVA_OPTS=-Xms1g -Xmx1g
+          volumes:
+            - "{{ elk_elasticsearch_data_directory }}:/usr/share/elasticsearch/data"
+          ulimits:
+            memlock:
+              soft: -1
+              hard: -1
+            nofile:
+              soft: 65536
+              hard: 65536
+          networks:
+            - internal
+        logstash:
+          container_name: "{{ elk_logstash_container_name }}"
+          image: "{{ elk_logstash_container_image }}"
+          restart: "{{ elk_logstash_restart_policy }}"
+          environment:
+            - LOGSPOUT=ignore
+          depends_on:
+            - elasticsearch
+          volumes:
+            - "{{ elk_logstash_config_directory }}/logstash.conf:/usr/share/logstash/pipeline/logstash.conf"
+          networks:
+            - internal
+        logspout:
+          container_name: "{{ elk_logspout_container_name }}"
+          image: "{{ elk_logspout_container_image }}"
+          restart: "{{ elk_logspout_restart_policy }}"
+          volumes:
+            - /etc/hostname:/etc/host_hostname:ro
+            - /var/run/docker.sock:/var/run/docker.sock
+          command: "syslog://{{ elk_logstash_container_name }}:5000"
+          environment:
+            - RETRY_COUNT=100
+          depends_on:
+            - logstash
+          networks:
+            - internal
+        kibana:
+          container_name: "{{ elk_kibana_container_name }}"
+          image: "{{ elk_kibana_container_image }}"
+          restart: "{{ elk_kibana_restart_policy }}"
+          environment:
+            - LOGSPOUT=ignore
+            - "ELASTICSEARCH_HOSTS=http://{{ elk_elasticsearch_container_name }}:9200"
+            - "SERVER_PUBLICBASEURL={{ elk_kibana_public_url }}"
+          depends_on:
+            - elasticsearch
+          labels:
+            - "traefik.enable={{ elk_kibana_expose }}"
+            - "traefik.http.routers.kibana.tls=true"
+            - "traefik.http.routers.kibana.rule={{ elk_kibana_traefik_rule }}"
+            - "traefik.http.routers.kibana.middlewares=fauth@file"
+            - "traefik.http.routers.kibana.tls.certresolver=letsencrypt"
+            - "traefik.http.services.kibana.loadbalancer.server.port=5601"
+          networks:
+            - internal
+            - traefik_public
+            - mail

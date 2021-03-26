@@ -1,0 +1,28 @@
+---
+# defaults file for elk
+
+
+elk_project_name: elk
+elk_data_directory: "{{ base_data_directory }}/elk"
+
+elk_elasticsearch_container_image: docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+elk_elasticsearch_container_name: elasticsearch
+elk_elasticsearch_mem_limit: 2g
+elk_elasticsearch_restart_policy: unless-stopped
+elk_elasticsearch_data_directory: "{{ elk_data_directory }}/elasticsearch"
+
+elk_logstash_container_name: logstash
+elk_logstash_container_image: docker.elastic.co/logstash/logstash:7.12.0
+elk_logstash_config_directory: "{{ elk_data_directory }}/logstash"
+elk_logstash_restart_policy: unless-stopped
+
+elk_logspout_container_name: logspout
+elk_logspout_container_image: gliderlabs/logspout
+elk_logspout_restart_policy: unless-stopped
+
+elk_kibana_container_name: kibana
+elk_kibana_container_image: docker.elastic.co/kibana/kibana:7.12.0
+elk_kibana_public_url: "https://kibana.{{ domain }}:443"
+elk_kibana_expose: "true"
+elk_kibana_traefik_rule: "Host(`kibana.{{ domain }}`)"
+elk_kibana_restart_policy: unless-stopped

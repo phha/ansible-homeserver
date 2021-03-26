@@ -158,6 +158,10 @@
       tags:
         - firefox
       when: (firefox_enabled | default(False))
+    - role: elk
+      tags:
+        - elk
+      when: (elk_enabled | default(False))
     - role: mail
       tags:
         - mail
