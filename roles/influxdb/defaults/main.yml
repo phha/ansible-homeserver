@@ -3,7 +3,7 @@
 
 influxdb_project_name: influxdb
 influxdb_container_name: influxdb
-influxdb_container_image: "influxdb:latest"
+influxdb_container_image: "influxdb:1.8-alpine"
 influxdb_data_directory: "{{ base_data_directory }}/influxdb"
 influxdb_restart_policy: unless-stopped
 

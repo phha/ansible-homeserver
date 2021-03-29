@@ -17,7 +17,7 @@
       networks:
         influxdb:
           driver: overlay
-          internal: true
+          internal: false
           attachable: true
           name: influxdb
         traefik_public:
