@@ -29,6 +29,10 @@ filter {
     mutate {
       remove_field => [ "msg" ]
     }
+    geoip {
+      source => "ClientHost"
+      target => "geoip"
+    }
   }
   else if ("" in [msg]) {
     mutate {

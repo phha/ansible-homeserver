@@ -17,6 +17,7 @@ traefik_container_name: traefik
 traefik_container_image: "traefik:latest"
 traefik_data_directory: "{{ base_data_directory }}/traefik"
 traefik_log_level: INFO
+traefik_access_log: false
 traefik_network_name: traefik_public
 traefik_expose: "true"
 traefik_restart_policy: unless-stopped

@@ -42,6 +42,8 @@
             - ES_JAVA_OPTS=-Xms1g -Xmx1g
           volumes:
             - "{{ elk_elasticsearch_data_directory }}:/usr/share/elasticsearch/data"
+          ports: 
+            - 9200:9200
           ulimits:
             memlock:
               soft: -1
@@ -51,6 +53,7 @@
               hard: 65536
           networks:
             - internal
+            - traefik_public
         logstash:
           container_name: "{{ elk_logstash_container_name }}"
           image: "{{ elk_logstash_container_image }}"

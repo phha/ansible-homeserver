@@ -5,6 +5,10 @@
   environment:
     DOCKER_TIMEOUT: "600"
   roles:
+    - role: traefik
+      tags:
+        - traefik
+      when: "'traefik' in ansible_run_tags"
     - role: homeassistant
       tags:
         - homeassistant
