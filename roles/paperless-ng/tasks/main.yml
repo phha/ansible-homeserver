@@ -25,7 +25,6 @@
     project_name: "{{ paperless_ng_project_name }}"
     pull: "{{ 'upgrade' in ansible_run_tags }}"
     definition:
-    definition:
       version: "3.5"
       networks:
         traefik_public:
@@ -73,6 +72,9 @@
             - "PAPERLESS_DBNAME={{ paperless_ng_postgres_db }}"
             - "PAPERLESS_DBUSER={{ paperless_ng_postgres_user }}"
             - "PAPERLESS_DBPASS={{ paperless_ng_postgres_password }}"
+            - "PAPERLESS_ADMIN_USER={{ paperless_ng_superuser_name }}"
+            - "PAPERLESS_ADMIN_PASSWORD={{ paperless_ng_superuser_password }}"
+            - "PAPERLESS_ADMIN_MAIL={{ paperless_ng_superuser_mail }}"
           volumes:
             - "{{ paperless_ng_data_directory }}:/usr/src/paperless/data"
             - "{{ paperless_ng_media_directory }}:/usr/src/paperless/media"
@@ -116,6 +118,9 @@
             - "PAPERLESS_DBUSER={{ paperless_ng_postgres_user }}"
             - "PAPERLESS_DBPASS={{ paperless_ng_postgres_password }}"
             - "PAPERLESS_NG_EXPORT_SLEEP={{ paperless_ng_export_sleep }}"
+            - "PAPERLESS_ADMIN_USER={{ paperless_ng_superuser_name }}"
+            - "PAPERLESS_ADMIN_PASSWORD={{ paperless_ng_superuser_password }}"
+            - "PAPERLESS_ADMIN_MAIL={{ paperless_ng_superuser_mail }}"
           volumes:
             - "{{ paperless_ng_data_directory }}:/usr/src/paperless/data"
             - "{{ paperless_ng_media_directory }}:/usr/src/paperless/media"
@@ -127,16 +132,3 @@
 - name: wait
   pause:
     seconds: 10
-
-- name: superuser
-  expect:
-    command: "docker exec -it {{ paperless_ng_container_name }} python3 /usr/src/paperless/src/manage.py createsuperuser"
-    timeout: 10
-    responses:
-      "Username ": "{{ paperless_ng_superuser_name }}"
-      "Email": "{{ paperless_ng_superuser_mail }}"
-      "Password": "{{ paperless_ng_superuser_password }}"
-      "Bypass": "y"
-      "Error": "\003"
-  ignore_errors: yes
-  no_log: true
