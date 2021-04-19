@@ -23,6 +23,8 @@
 - name: compose
   docker_compose:
     project_name: "{{ paperless_ng_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
     definition:
       version: "3.5"
       networks:
@@ -74,8 +76,8 @@
           volumes:
             - "{{ paperless_ng_data_directory }}:/usr/src/paperless/data"
             - "{{ paperless_ng_media_directory }}:/usr/src/paperless/media"
-            - "{{ paperless_ng_consume_directory }}:/consume"
-            - "{{ paperless_ng_export_directory }}:/export"
+            - "{{ paperless_ng_consume_directory }}:/usr/src/paperless/consume"
+            - "{{ paperless_ng_export_directory }}:/usr/src/paperless/export"
           labels:
             - "traefik.enable={{ paperless_ng_expose }}"
             - "traefik.http.routers.paperless_ng.tls=true"
@@ -117,8 +119,8 @@
           volumes:
             - "{{ paperless_ng_data_directory }}:/usr/src/paperless/data"
             - "{{ paperless_ng_media_directory }}:/usr/src/paperless/media"
-            - "{{ paperless_ng_consume_directory }}:/consume"
-            - "{{ paperless_ng_export_directory }}:/export"
+            - "{{ paperless_ng_consume_directory }}:/usr/src/paperless/consume"
+            - "{{ paperless_ng_export_directory }}:/usr/src/paperless/export"
           networks:
             - paperless_ng
 

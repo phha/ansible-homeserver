@@ -22,6 +22,7 @@
 - name: compose
   docker_compose:
     project_name: "{{ wallabag_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
     definition:
       version: "3.5"
       networks:

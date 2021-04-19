@@ -4,6 +4,8 @@
   become: true
   environment:
     DOCKER_TIMEOUT: "600"
+    DOCKER_CLIENT_TIMEOUT: "600"
+    COMPOSE_HTTP_TIMEOUT: "600"
   roles:
     - role: traefik
       tags:
