@@ -14,6 +14,7 @@ base_directory: /srv/docker
 base_data_directory: "{{ base_directory }}/data"
 base_runtime_directory: "{{ base_directory }}/runtime"
 shared_directory: "{{ base_directory }}/shared"
+prune: true
 
 # Backups
 db_backups_enabled: true
