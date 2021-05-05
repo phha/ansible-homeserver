@@ -128,7 +128,3 @@
             - "{{ paperless_ng_export_directory }}:/usr/src/paperless/export"
           networks:
             - paperless_ng
-
-- name: wait
-  pause:
-    seconds: 10
