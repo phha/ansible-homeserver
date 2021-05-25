@@ -24,11 +24,13 @@
           image: "{{ jupyter_container_image }}"
           restart: "{{ jupyter_restart_policy }}"
           command: "start-notebook.sh --ServerApp.custom_display_url='{{ jupyter_url }}' --ServerApp.token='' --ServerApp.password=''"
+          user: root
           environment:
             - "TZ={{ timezone }}"
             - "JUPYTER_ENABLE_LAB={{ jupyter_lab_enabled }}"
             - "RESTARTABLE={{ jupyter_restartable }}"
             - "JUPYTER_TOKEN=''"
+            - "GRANT_SUDO=yes"
           volumes:
             - "{{ jupyter_data_directory }}:/home/jovyan"
           labels:
