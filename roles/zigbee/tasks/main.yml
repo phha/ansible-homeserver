@@ -10,7 +10,7 @@
   template:
     src: configuration.yaml.j2
     dest: "{{ zigbee2mqtt_data_directory }}/configuration.yaml"
-    force: no
+    force: yes
 
 - name: device file
   file:
