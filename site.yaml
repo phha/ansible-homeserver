@@ -160,10 +160,18 @@
       tags:
         - wallabag
       when: (wallabag_enabled | default(False))
+    - role: wallabag_kindle
+      tags:
+        - wallabag_kindle
+      when: (wallabag_kindle_enabled | default(False))
     - role: firefox
       tags:
         - firefox
       when: (firefox_enabled | default(False))
+    - role: joplin
+      tags:
+        - joplin
+      when: (joplin_enabled | default(False))
     - role: elk
       tags:
         - elk

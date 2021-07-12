@@ -197,8 +197,16 @@ diun_enabled: true
 wallabag_enabled: true
 wallabag_admin_password: Nucleus-Gathering-Glacier-Petted
 
+# Wallabag Kindle Consumer
+wallabag_kindle_enabled: true
+wallabag_kindle_client_id: Slept-Persuaded-Prissy-Tabasco
+wallabag_kindle_client_secret: Lurch-Imprudent-Prevalent-Bluish
+
 # Firefox
 firefox_enabled: true
+
+# Joplin
+joplin_enabled: true
 
 # ELK stack
 elk_enabled: true

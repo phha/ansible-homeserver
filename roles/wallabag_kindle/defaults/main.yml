@@ -1,0 +1,24 @@
+---
+# defaults file for wallabag_kindle
+
+wallabag_kindle_project_name: wallabag_kindle
+wallabag_kindle_container_name: wallabag_kindle
+wallabag_kindle_create_db_container_name: wallabag_kindle_create_db
+wallabag_kindle_container_image: "janlo/wallabag-kindle-consumer:latest"
+wallabag_kindle_restart_policy: unless-stopped
+wallabag_kindle_traefik_rule: "Host(`wallabag_kindle.{{ domain }}`)"
+wallabag_kindle_expose: "true"
+wallabag_kindle_data_directory: "{{ base_data_directory }}/wallabag_kindle"
+wallabag_kindle_wallabag_host: http://wallabag
+wallabag_kindle_db_uri: sqlite:////data/database.db
+wallabag_kindle_domain: "wallabag_kindle.{{domain}}"
+wallabag_kindle_smtp_from: "{{ email_address }}"
+wallabag_kindle_smtp_host: mail
+wallabag_kindle_smtp_port: "25"
+wallabag_kindle_smtp_user: ""
+wallabag_kindle_smtp_passwd: ""
+wallabag_kindle_tag: kindle
+wallabag_kindle_refresh_grace: "120"
+wallabag_kindle_consume_interval: "60"
+wallabag_kindle_interface_host: 0.0.0.0
+wallabag_kindle_interface_port: "8080"

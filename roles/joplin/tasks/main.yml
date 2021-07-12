@@ -1,0 +1,46 @@
+---
+# task file for joplin
+
+- name: directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ joplin_uid }}"
+    group: "{{ joplin_gid }}"
+  loop:
+    - "{{ joplin_data_directory }}"
+
+- name: compose
+  docker_compose:
+    project_name: "{{ joplin_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+      services:
+        joplin:
+          container_name: "{{ joplin_container_name }}"
+          image: "{{ joplin_container_image }}"
+          restart: "{{ joplin_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "USER_ID={{ joplin_uid }}"
+            - "GROUP_ID={{ joplin_gid }}"
+            - "KEEP_APP_RUNNING=1"
+            - "DISPLAY_WIDTH={{ joplin_display_width }}"
+            - "DISPLAY_HEIGHT={{ joplin_display_height }}"
+            - "ENABLE_CJK_FONT=1"
+          volumes:
+            - "/dev/shm:/dev/shm"
+            - "{{ joplin_data_directory }}:/config"
+          labels:
+            - "traefik.enable={{ joplin_expose }}"
+            - "traefik.http.routers.joplin.tls=true"
+            - "traefik.http.routers.joplin.rule={{ joplin_traefik_rule }}"
+            - "traefik.http.routers.joplin.middlewares=fauth@file"
+            - "traefik.http.routers.joplin.tls.certresolver=letsencrypt"
+            - "traefik.http.services.joplin.loadbalancer.server.port=5800"
+          networks:
+            - traefik_public

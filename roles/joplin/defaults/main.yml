@@ -1,0 +1,14 @@
+---
+# defaults file for joplin
+
+joplin_project_name: joplin
+joplin_container_name: joplin
+joplin_container_image: "phha/joplin-web:latest"
+joplin_restart_policy: unless-stopped
+joplin_traefik_rule: "Host(`joplin.{{ domain }}`)"
+joplin_expose: "true"
+joplin_data_directory: "{{ base_data_directory }}/joplin"
+joplin_display_width: "1280"
+joplin_display_height: "800"
+joplin_uid: "1000"
+joplin_gid: "1000"
