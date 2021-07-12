@@ -6,35 +6,6 @@
     path: "{{ wallabag_kindle_data_directory }}"
     state: directory
 
-# - name: create database
-#   docker_container:
-#     name: "{{ wallabag_kindle_create_db_container_name }}"
-#     image: "{{ wallabag_kindle_container_image }}"
-#     # command: ["./service.py", "--env", "--create_db"]
-#     entrypoint: ["./service.py", "--env", "--create_db"]
-#     auto_remove: false
-#     detach: false
-#     cleanup: true
-#     volumes:
-#       - "{{ wallabag_kindle_data_directory }}:/data"
-#     env:
-#       TZ: "{{ timezone }}"
-#       WALLABAG_HOST: "{{ wallabag_kindle_wallabag_host }}"
-#       DB_URI: "{{ wallabag_kindle_db_uri }}"
-#       CLIENT_ID: "{{ wallabag_kindle_client_id }}"
-#       CLIENT_SECRET: "{{ wallabag_kindle_client_secret }}"
-#       DOMAIN: "{{ wallabag_kindle_domain }}"
-#       SMTP_FROM: "{{ wallabag_kindle_smtp_from }}"
-#       SMTP_HOST: "{{ wallabag_kindle_smtp_host }}"
-#       SMTP_PORT: "{{ wallabag_kindle_smtp_port }}"
-#       SMTP_USER: "{{ wallabag_kindle_smtp_user }}"
-#       SMTP_PASSWD: "{{ wallabag_kindle_smtp_passwd }}"
-#       TAG: "{{ wallabag_kindle_tag }}"
-#       REFRESH_GRACE: "{{ wallabag_kindle_refresh_grace }}"
-#       CONSUME_INTERVAL: "{{ wallabag_kindle_consume_interval }}"
-#       INTERFACE_HOST: "{{ wallabag_kindle_interface_host }}"
-#       INTERFACE_PORT: "{{ wallabag_kindle_interface_port }}"
-
 - name: compose
   docker_compose:
     project_name: "{{ wallabag_kindle_project_name }}"
@@ -50,7 +21,6 @@
         wallabag_kindle:
           container_name: "{{ wallabag_kindle_container_name }}"
           image: "{{ wallabag_kindle_container_image }}"
-          command: ./service.py --create_db --refresher --consumer --interface --env
           environment:
             - "TZ={{ timezone }}"
             - "WALLABAG_HOST={{ wallabag_kindle_wallabag_host }}"
