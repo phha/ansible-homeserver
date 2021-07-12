@@ -176,6 +176,10 @@
       tags:
         - elk
       when: (elk_enabled | default(False))
+    - role: syncthing
+      tags:
+        - syncthing
+      when: (syncthing_enabled | default(False))
     - role: mail
       tags:
         - mail

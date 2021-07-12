@@ -1,0 +1,13 @@
+syncthing_project_name: syncthing
+syncthing_container_name: syncthing
+syncthing_container_image: ghcr.io/linuxserver/syncthing
+syncthing_restart_policy: unless-stopped
+syncthing_uid: "1000"
+syncthing_gid: "1000"
+syncthing_expose: "true"
+syncthing_traefik_rule: "Host(`syncthing.{{ domain }}`)"
+syncthing_data_directory: "{{ base_data_directory }}/syncthing"
+syncthing_extra_volumes: []
+syncthing_basic_volumes:
+  - "{{ syncthing_data_directory }}:/config"
+syncthing_all_volumes: "{{ (syncthing_basic_volumes + syncthing_extra_volumes) | list }}"

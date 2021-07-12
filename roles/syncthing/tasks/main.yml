@@ -1,0 +1,38 @@
+---
+# task file for syncthing
+
+- name: directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ syncthing_uid }}"
+    group: "{{ syncthing_gid }}"
+  loop:
+    - "{{ syncthing_data_directory }}"
+
+- name: compose
+  docker_compose:
+    project_name: "{{ syncthing_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      services:
+        syncthing:
+          container_name: "{{ syncthing_container_name }}"
+          image: "{{ syncthing_container_image }}"
+          restart: "{{ syncthing_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ syncthing_uid }}"
+            - "PGID={{ syncthing_gid }}"
+          volumes: "{{ syncthing_all_volumes }}"
+          labels:
+            - "traefik.enable={{ syncthing_expose }}"
+            - "traefik.http.routers.syncthing.tls=true"
+            - "traefik.http.routers.syncthing.rule={{ syncthing_traefik_rule }}"
+            - "traefik.http.routers.syncthing.middlewares=fauth@file"
+            - "traefik.http.routers.syncthing.tls.certresolver=letsencrypt"
+            - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
+          network_mode: host
+          extra_hosts:
+            "host.docker.internal": "{{ host_ip }}"
