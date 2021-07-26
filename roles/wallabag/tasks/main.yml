@@ -35,10 +35,32 @@
           name: wallabag
           internal: true
       services:
+        db:
+          container_name: "{{ wallabag_db_container_name }}"
+          image: "{{ wallabag_db_container_image }}"
+          restart: "{{ wallabag_db_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "MYSQL_ROOT_PASSWORD={{ wallabag_mysql_root_password }}"
+          volumes:
+            - "{{ wallabag_runtime_directory }}/db:/var/lib/mysql"
+          networks:
+            - wallabag
+        redis:
+          container_name: "{{ wallabag_redis_container_name }}"
+          image: "{{ wallabag_redis_container_image }}"
+          restart: "{{ wallabag_redis_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+          networks:
+            - wallabag
         wallabag:
           container_name: "{{ wallabag_container_name }}"
           image: "{{ wallabag_container_image }}"
           restart: "{{ wallabag_restart_policy }}"
+          depends_on:
+            - db
+            - redis
           environment:
             - "TZ={{ timezone }}"
             - "SYMFONY__ENV__DOMAIN_NAME={{ wallabag_domain_name }}"
@@ -68,25 +90,6 @@
             - wallabag
             - traefik_public
             - mail
-        db:
-          container_name: "{{ wallabag_db_container_name }}"
-          image: "{{ wallabag_db_container_image }}"
-          restart: "{{ wallabag_db_restart_policy }}"
-          environment:
-            - "TZ={{ timezone }}"
-            - "MYSQL_ROOT_PASSWORD={{ wallabag_mysql_root_password }}"
-          volumes:
-            - "{{ wallabag_runtime_directory }}/db:/var/lib/mysql"
-          networks:
-            - wallabag
-        redis:
-          container_name: "{{ wallabag_redis_container_name }}"
-          image: "{{ wallabag_redis_container_image }}"
-          restart: "{{ wallabag_redis_restart_policy }}"
-          environment:
-            - "TZ={{ timezone }}"
-          networks:
-            - wallabag
 
 - name: wait
   pause:

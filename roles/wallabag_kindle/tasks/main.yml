@@ -45,7 +45,7 @@
             - "traefik.enable={{ wallabag_kindle_expose }}"
             - "traefik.http.routers.wallabag_kindle.tls=true"
             - "traefik.http.routers.wallabag_kindle.rule={{ wallabag_kindle_traefik_rule }}"
-            - "traefik.http.routers.sonarr.middlewares=fauth@file"
+            - "traefik.http.routers.wallabag_kindle.middlewares=fauth@file"
             - "traefik.http.routers.wallabag_kindle.tls.certresolver=letsencrypt"
             - "traefik.http.services.wallabag_kindle.loadbalancer.server.port={{ wallabag_kindle_interface_port }}"
           networks:
