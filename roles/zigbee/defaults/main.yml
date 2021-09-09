@@ -8,4 +8,8 @@ zigbee2mqtt_project_name: zigbee2mqtt
 zigbee2mqtt_restart_policy: unless-stopped
 zigbee2mqtt_traefik_rule: "Host(`zigbee.{{ domain }}`)"
 zigbee2mqtt_expose: "true"
-zigbee2mqtt_disable_led: true
+zigbee2mqtt_disable_led: false
+zigbee2mqtt_pan_id: 0x1a62
+zigbee2mqtt_legacy_triggers: true
+zigbee2mqtt_channel: 11
+zigbee2mqtt_network_key: "[1, 3, 5, 7, 9, 11, 13, 15, 0, 2, 4, 6, 8, 10, 12, 13]"

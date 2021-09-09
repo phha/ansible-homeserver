@@ -180,6 +180,10 @@
       tags:
         - syncthing
       when: (syncthing_enabled | default(False))
+    - role: piknik
+      tags:
+        - piknik
+      when: (piknik_enabled | default(False))
     - role: mail
       tags:
         - mail

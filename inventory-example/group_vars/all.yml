@@ -212,6 +212,9 @@ joplin_enabled: true
 # ELK stack
 elk_enabled: true
 
+# piknik
+piknik_enabled: true
+
 # Samba
 samba_enabled: true
 samba_shares_root: "{{ base_directory }}/samba_shares"

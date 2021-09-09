@@ -1,0 +1,32 @@
+---
+# task file for piknik
+
+- name: data directory
+  file:
+    path: "{{ piknik_data_directory }}"
+    state: directory
+
+- name: compose
+  docker_compose:
+    project_name: "{{ piknik_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+      services:
+        piknik:
+          container_name: "{{ piknik_container_name }}"
+          image: "{{ piknik_container_image }}"
+          restart: "{{ piknik_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ piknik_uid }}"
+            - "PGID={{ piknik_gid }}"
+          volumes:
+            - "{{ piknik_data_directory }}:/config"
+          ports:
+            - "{{ piknik_port }}:{{ 8075 }}"
+          networks:
+            - traefik_public

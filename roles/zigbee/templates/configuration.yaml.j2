@@ -7,8 +7,11 @@ serial:
   port: "{{ zigbee_device }}"
   disable_led: {{ zigbee2mqtt_disable_led }}
 advanced:
+  pan_id: {{ zigbee2mqtt_pan_id }}
   last_seen: ISO_8601_local
-  homeassistant_legacy_triggers: true
+  homeassistant_legacy_triggers: {{ zigbee2mqtt_legacy_triggers }}
+  channel: {{ zigbee2mqtt_channel }}
+  network_key: {{ zigbee2mqtt_network_key }}
 frontend:
   port: 2233
 experimental:

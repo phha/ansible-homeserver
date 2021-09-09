@@ -1,0 +1,11 @@
+---
+# defaults file for piknik
+
+piknik_project_name: piknik
+piknik_container_name: piknik
+piknik_container_image: "phha/piknik:latest"
+piknik_restart_policy: unless-stopped
+piknik_uid: "1000"
+piknik_gid: "1000"
+piknik_port: "8075"
+piknik_data_directory: "{{ base_data_directory }}/piknik"
