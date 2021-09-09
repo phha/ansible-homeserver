@@ -38,6 +38,10 @@
         enabled: yes
         state: started
 
+    - name: Initialize docker swarm
+      community.docker.docker_swarm:
+        state: present
+
     - name: Create internal network
       docker_network:
         name: "{{ internal_network_name }}"
