@@ -1,0 +1,41 @@
+---
+# task file for webtop
+
+- name: data directory
+  file:
+    path: "{{ webtop_data_directory }}"
+    state: directory
+
+- name: compose
+  docker_compose:
+    project_name: "{{ webtop_project_name }}"
+    pull: "{{ 'force-upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+      services:
+        webtop:
+          container_name: "{{ webtop_container_name }}"
+          image: "{{ webtop_container_image }}"
+          restart: "{{ webtop_restart_policy }}"
+          privileged: "{{ webtop_privileged }}"
+          shm_size: "{{ webtop_shm_size }}"
+          security_opt: "{{ webtop_security_opt }}"
+          environment:
+            - "TZ={{ webtop_timezone }}"
+            - "PUID={{ webtop_uid }}"
+            - "PGID={{ webtop_gid }}"
+            - "SUBFOLDER={{ webtop_subfolder }}"
+          volumes:
+            - "{{ webtop_data_directory }}:/config"
+          labels:
+            - "traefik.enable={{ webtop_expose }}"
+            - "traefik.http.routers.webtop.tls=true"
+            - "traefik.http.routers.webtop.rule={{ webtop_traefik_rule }}"
+            - "traefik.http.routers.webtop.middlewares=fauth@file"
+            - "traefik.http.routers.webtop.tls.certresolver=letsencrypt"
+            - "traefik.http.services.webtop.loadbalancer.server.port=3000"
+          networks:
+            - traefik_public

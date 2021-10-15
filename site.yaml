@@ -184,6 +184,10 @@
       tags:
         - piknik
       when: (piknik_enabled | default(False))
+    - role: webtop
+      tags:
+        - webtop
+      when: (webtop_enabled | default(False))
     - role: mail
       tags:
         - mail

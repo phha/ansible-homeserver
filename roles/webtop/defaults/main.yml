@@ -1,0 +1,17 @@
+---
+# defaults file for webtop
+
+webtop_project_name: webtop
+webtop_container_name: webtop
+webtop_container_image: "lscr.io/linuxserver/webtop:ubuntu-xfce"
+webtop_restart_policy: unless-stopped
+webtop_privileged: true
+webtop_shm_size: "1gb"
+webtop_security_opt: [seccomp:unconfined]
+webtop_timezone: "{{ timezone }}"
+webtop_uid: "1000"
+webtop_gid: "1000"
+webtop_subfolder: "/"
+webtop_traefik_rule: "Host(`webtop.{{ domain }}`)"
+webtop_expose: "true"
+webtop_data_directory: "{{ base_data_directory }}/webtop"

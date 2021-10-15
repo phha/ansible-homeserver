@@ -1,0 +1,3 @@
+[submodule "roles/tvheadend/files/TVHadmin-JS"]
+	path = roles/tvheadend/files/TVHadmin-JS
+	url = git@github.com:dave-p/TVHadmin-JS.git
