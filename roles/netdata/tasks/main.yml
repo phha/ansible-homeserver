@@ -3,11 +3,12 @@
 
 - name: directory
   file:
-    path: "{{ netdata_data_directory }}/etc"
+    path: "{{ item }}"
     state: directory
   loop:
     - "{{ netdata_data_directory }}/etc"
-    - "{{ netdata_data_directory }}/orig"
+    - "{{ netdata_data_directory }}/lib"
+    - "{{ netdata_runtime_directory }}/cache"
 
 - name: docker gid
   group:
@@ -30,11 +31,17 @@
           container_name: "{{ netdata_container_name }}"
           image: "{{ netdata_container_image }}"
           restart: "{{ netdata_restart_policy }}"
-          hostname: "{{ domain }}"
+          hostname: "netdata.{{ domain }}"
           environment:
             - "TZ={{ timezone }}"
             - "PGID={{ docker_group.gid }}"
           volumes:
+            - "{{ netdata_data_directory }}/etc:/etc/netdata"
+            - "{{ netdata_data_directory }}/lib:/var/lib/netdata"
+            - "{{ netdata_runtime_directory }}/cache:/var/cache/netdata"
+            - /etc/passwd:/host/etc/passwd:ro
+            - /etc/group:/host/etc/group:ro
+            - /etc/os-release:/host/etc/os-release:ro
             - /proc:/host/proc:ro
             - /sys:/host/sys:ro
             - "{{ docker_socket_path }}:{{ docker_socket_path }}:ro"
