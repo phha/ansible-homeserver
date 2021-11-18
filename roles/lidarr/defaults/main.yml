@@ -1,9 +1,9 @@
 ---
 # defaults file for lidarr
 
-lidarr_project_name: lidarr
+lidarr_project_name: "{{ media_project_name }}"
 lidarr_container_name: lidarr
-lidarr_container_image: "lscr.io/linuxserver/lidarr"
+lidarr_container_image: "ghcr.io/hotio/lidarr"
 lidarr_restart_policy: unless-stopped
 lidarr_traefik_rule: "Host(`lidarr.{{ domain }}`)"
 lidarr_expose: "true"

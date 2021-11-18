@@ -5,6 +5,8 @@
   file:
     path: "{{ lidarr_data_directory }}"
     state: directory
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
 
 - name: compose
   docker_compose:
@@ -17,6 +19,8 @@
           external: true
         mail:
           external: true
+        media:
+          external: true
       services:
         lidarr:
           container_name: "{{ lidarr_container_name }}"
@@ -24,14 +28,14 @@
           restart: "{{ lidarr_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ media_uid }}"
-            - "PGID={{ media_gid }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
             - "DOCKER_MODS={{ lidarr_docker_mods }}"
           volumes:
             - "{{ lidarr_data_directory }}:/config"
-            - "{{ media_music_directory }}:/music"
+            - "{{ media_directory }}:/data"
             - "{{ shared_directory }}:/shared:ro"
-            - "{{ media_download_directory }}/complete/music:/download"
           labels:
             - "traefik.enable={{ lidarr_expose }}"
             - "traefik.http.routers.lidarr.tls=true"
@@ -42,3 +46,4 @@
           networks:
             - traefik_public
             - mail
+            - media

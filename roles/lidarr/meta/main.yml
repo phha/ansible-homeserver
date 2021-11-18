@@ -1,3 +1,5 @@
 dependencies:
   - sabnzbd
-  - nzbhydra2
+  - prowlarr
+  - media
+
