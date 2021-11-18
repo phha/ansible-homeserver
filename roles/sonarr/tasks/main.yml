@@ -5,6 +5,8 @@
   file:
     path: "{{ sonarr_data_directory }}"
     state: directory
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
 
 - name: compose
   docker_compose:

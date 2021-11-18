@@ -3,3 +3,4 @@ dependencies:
   - mail
   - sabnzbd
   - prowlarr
+  - torrent

@@ -5,6 +5,8 @@
   file:
     path: "{{ calibre_web_data_directory }}"
     state: directory
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
 
 - name: compose
   docker_compose:
@@ -26,12 +28,13 @@
           restart: "{{ calibre_web_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ media_uid }}"
-            - "PGID={{ media_gid }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
             - "DOCKER_MODS=linuxserver/calibre-web:calibre"
           volumes:
             - "{{ calibre_web_data_directory }}:/config"
-            - "{{ media_books_directory }}:/books"
+            - "{{ media_directory }}/media/books:/books"
             - "{{ shared_directory }}:/shared:ro"
           labels:
             - "traefik.enable={{ calibre_web_expose }}"

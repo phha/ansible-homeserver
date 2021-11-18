@@ -5,8 +5,8 @@
   file:
     path: "{{ ombi_data_directory }}"
     state: directory
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
 
 - name: compose
   docker_compose:
@@ -26,8 +26,8 @@
           restart: "{{ ombi_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ media_uid }}"
-            - "PGID={{ media_gid }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
           volumes:
             - "{{ ombi_data_directory }}:/config"
           labels:

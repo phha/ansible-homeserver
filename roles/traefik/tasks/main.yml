@@ -8,6 +8,10 @@
         name: traefik_public
         attachable: yes
         driver: overlay
+        ipam_config:
+          - subnet: "{{ traefik_public_subnet }}"
+            gateway: "{{ traefik_public_gateway }}"
+            iprange: "{{ trefik_public_iprange }}"
         state: present
         internal: false
 

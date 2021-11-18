@@ -22,6 +22,10 @@ traefik_network_name: traefik_public
 traefik_expose: "true"
 traefik_restart_policy: unless-stopped
 
+traefik_public_subnet: 10.0.2.0/24
+traefik_public_gateway: 10.0.2.1
+trefik_public_iprange: 10.0.2.0/26
+
 letsencrypt_email_address: "{{ email_address }}"
 
 extra_routes: {}

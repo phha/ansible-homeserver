@@ -5,8 +5,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ firefox_uid }}"
-    group: "{{ firefox_gid }}"
+    # owner: "{{ firefox_uid }}"
+    # group: "{{ firefox_gid }}"
   loop:
     - "{{ firefox_data_directory }}"
     - "{{ firefox_download_directory }}"
@@ -27,8 +27,8 @@
           restart: "{{ firefox_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "USER_ID={{ firefox_uid }}"
-            - "GROUP_ID={{ firefox_gid }}"
+            # - "USER_ID={{ firefox_uid }}"
+            # - "GROUP_ID={{ firefox_gid }}"
             - "KEEP_APP_RUNNING=1"
             - "DISPLAY_WIDTH={{ firefox_display_width }}"
             - "DISPLAY_HEIGHT={{ firefox_display_height }}"

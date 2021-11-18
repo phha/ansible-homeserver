@@ -1,0 +1,72 @@
+---
+# task file for torrent
+
+- name: data directory
+  file:
+    path: "{{ torrent_data_directory }}/wireguard"
+    state: directory
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
+
+- name: wireguard config file
+  template:
+    src: "wg0.conf.j2"
+    dest: "{{ torrent_data_directory }}/wireguard/wg0.conf"
+
+- name: reverse proxy firewall fix
+  template:
+    src: "04-fix-firewall-reverse-proxy.j2"
+    dest: "{{ torrent_data_directory }}/04-fix-firewall-reverse-proxy"
+    mode: '700'
+    owner: 'root'
+
+- name: ip6table_filter module
+  community.general.modprobe:
+    name: ip6table_filter
+    state: present
+  when: torrent_disable_ipv6 == '0'
+
+- name: compose
+  docker_compose:
+    project_name: "{{ torrent_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+      services:
+        torrent:
+          container_name: "{{ torrent_container_name }}"
+          image: "{{ torrent_container_image }}"
+          restart: "{{ torrent_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
+            - "VPN_ENABLED={{ torrent_vpn_enabled }}"
+            - "VPN_LAN_NETWORK={{ torrent_vpn_lan_network }}"
+            - "VPN_CONF={{ torrent_vpn_conf }}"
+            - "VPN_ADDITIONAL_PORTS={{ torrent_vpn_additional_ports }}"
+            - "PRIVOXY_ENABLED={{ torrent_privoxy_enabled }}"
+            - "FLOOD_AUTH={{ torrent_flood_auth }}"
+          volumes:
+            - "{{ torrent_data_directory }}:/config"
+            - "{{ media_directory }}/torrent:/data/torrent"
+            - "{{ shared_directory }}:/shared:ro"
+            - "{{ torrent_data_directory }}/04-fix-firewall-reverse-proxy:/etc/cont-init.d/04-fix-firewall-reverse-proxy:ro"
+          cap_add:
+            - NET_ADMIN
+          sysctls:
+            - net.ipv4.conf.all.src_valid_mark=1
+            - "net.ipv6.conf.all.disable_ipv6={{ torrent_disable_ipv6 }}"
+          labels:
+            - "traefik.enable={{ torrent_expose }}"
+            - "traefik.http.routers.torrent.tls=true"
+            - "traefik.http.routers.torrent.rule={{ torrent_traefik_rule }}"
+            - "traefik.http.routers.torrent.middlewares=fauth@file"
+            - "traefik.http.routers.torrent.tls.certresolver=letsencrypt"
+            - "traefik.http.services.torrent.loadbalancer.server.port=3000"
+          networks:
+            - traefik_public

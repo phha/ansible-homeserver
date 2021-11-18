@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+umask "${UMASK}"
+
+if [[ ${VPN_ENABLED} == "true" ]]; then
+  iptables -A INPUT -s "{{ traefik_public_subnet }}" -d "{{ traefik_public_subnet }}" -j ACCEPT
+  iptables -A OUTPUT -s "{{ traefik_public_subnet }}" -d "{{ traefik_public_subnet }}" -j ACCEPT
+
+  echo "[INFO] iptables overview after applying reverse proxy fix:"
+	iptables -S
+fi
