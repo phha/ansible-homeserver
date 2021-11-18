@@ -1,0 +1,44 @@
+---
+# task file for lidarr
+
+- name: data directory
+  file:
+    path: "{{ lidarr_data_directory }}"
+    state: directory
+
+- name: compose
+  docker_compose:
+    project_name: "{{ lidarr_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        mail:
+          external: true
+      services:
+        lidarr:
+          container_name: "{{ lidarr_container_name }}"
+          image: "{{ lidarr_container_image }}"
+          restart: "{{ lidarr_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ media_uid }}"
+            - "PGID={{ media_gid }}"
+            - "DOCKER_MODS={{ lidarr_docker_mods }}"
+          volumes:
+            - "{{ lidarr_data_directory }}:/config"
+            - "{{ media_music_directory }}:/music"
+            - "{{ shared_directory }}:/shared:ro"
+            - "{{ media_download_directory }}/complete/music:/download"
+          labels:
+            - "traefik.enable={{ lidarr_expose }}"
+            - "traefik.http.routers.lidarr.tls=true"
+            - "traefik.http.routers.lidarr.rule={{ lidarr_traefik_rule }}"
+            - "traefik.http.routers.lidarr.middlewares=fauth@file"
+            - "traefik.http.routers.lidarr.tls.certresolver=letsencrypt"
+            - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
+          networks:
+            - traefik_public
+            - mail

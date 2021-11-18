@@ -57,6 +57,7 @@ media_download_directory: /mnt/storage/downloads
 media_nzb_watch_directory: /mnt/storage/public/nzb
 media_series_directory: /mnt/storage/series
 media_movies_directory: /mnt/storage/movies
+media_music_directory: /mnt/storage/music
 media_books_directory: /mnt/storage/books
 media_audiobooks_directory: /mnt/storage/audiobooks
 media_magazines_directory: /mnt/storage/magazines
@@ -98,6 +99,9 @@ portainer_admin_password: Smooth-Pacific-Tractor-Monsoon
 
 # sonarr
 sonarr_enabled: true
+
+# lidarr
+lidarr_enabled: true
 
 # radarr
 radarr_enabled: true
@@ -242,6 +246,15 @@ samba_shares:
     public: true
     writable: false
     path: "{{ media_movies_directory }}"
+    owner: "{{ media_uid }}"
+    group: "{{ media_gid }}"
+  - name: music
+    comment: Music
+    guest_ok: true
+    browseable: true
+    public: true
+    writable: false
+    path: "{{ media_music_directory }}"
     owner: "{{ media_uid }}"
     group: "{{ media_gid }}"
   - name: recordings

@@ -1,0 +1,11 @@
+---
+# defaults file for lidarr
+
+lidarr_project_name: lidarr
+lidarr_container_name: lidarr
+lidarr_container_image: "lscr.io/linuxserver/lidarr"
+lidarr_restart_policy: unless-stopped
+lidarr_traefik_rule: "Host(`lidarr.{{ domain }}`)"
+lidarr_expose: "true"
+lidarr_data_directory: "{{ base_data_directory }}/lidarr"
+lidarr_docker_mods: "linuxserver/mods:lidarr-flac2mp3"
