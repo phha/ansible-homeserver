@@ -23,7 +23,7 @@ db_backups_cron: "0 21 * * *" # UTC
 duplicati_enabled: true
 duplicati_extra_volumes:
   - "/home/myuser:/source/myuser:ro"
-  - "{{ media_books_directory }}:/source/books:ro"
+  - "{{ media_directory }}/media/books:/source/books:ro"
   - "{{ paperless_ng_export_directory }}:/source/documents:ro"
 
 # Common Networking
@@ -124,12 +124,7 @@ nextcloud_storage_directory: /mnt/storage/nextcloud
 nextcloud_extra_volumes:
   - "/some/dir:/external/Documents"
   - "{{ tvheadend_recordings_directory }}:/external/recordings:ro"
-  - "{{ media_series_directory }}:/external/series:ro"
-  - "{{ media_movies_directory }}:/external/movies:ro"
-  - "{{ media_books_directory }}:/external/books:ro"
-  - "{{ media_audiobooks_directory }}:/external/audiobooks:ro"
-  - "{{ media_magazines_directory }}:/external/magazines:ro"
-  - "{{ media_comics_directory }}:/external/comics:ro"
+  - "{{ media_directory }}/media:/external/media:ro"
   - "{{ paperless_ng_media_directory }}:/external/paperless:ro"
   - "{{ shared_directory }}:/external/shared:rw"
 
@@ -153,12 +148,7 @@ organizr_enabled: true
 elkarbackup_enabled: true
 elkarbackup_backups_directory: /mnt/storage/elkarbackup
 elkarbackup_extra_volumes:
-  - "{{ media_series_directory }}:/sources/media/series:ro"
-  - "{{ media_movies_directory }}:/sources/media/movies:ro"
-  - "{{ media_books_directory }}:/sources/media/books:ro"
-  - "{{ media_audiobooks_directory }}:/sources/media/audiobooks:ro"
-  - "{{ media_magazines_directory }}:/sources/media/magazines:ro"
-  - "{{ media_comics_directory }}:/sources/media/comics:ro"
+  - "{{ media_directory }}/media:/sources/media/series:ro"
   - "{{ paperless_ng_export_directory }}:/sources/paperless:ro"
 
 # netdata
@@ -220,31 +210,13 @@ samba_users:
   - name: myuser
     password: mypassword
 samba_shares:
-  - name: series
-    comment: TV Series
+  - name: media
+    comment: Media
     guest_ok: true
     browseable: true
     public: true
     writable: false
-    path: "{{ media_series_directory }}"
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
-  - name: movies
-    comment: Movies
-    guest_ok: true
-    browseable: true
-    public: true
-    writable: false
-    path: "{{ media_movies_directory }}"
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
-  - name: music
-    comment: Music
-    guest_ok: true
-    browseable: true
-    public: true
-    writable: false
-    path: "{{ media_music_directory }}"
+    path: "{{ media_directory }}/media"
     owner: "{{ media_uid }}"
     group: "{{ media_gid }}"
   - name: recordings
@@ -256,42 +228,6 @@ samba_shares:
     path: "{{ tvheadend_recordings_directory }}"
     owner: "{{ tvheadend_uid }}"
     group: "{{ tvheadend_gid }}"
-  - name: books
-    comment: Books
-    guest_ok: true
-    browseable: true
-    public: true
-    writable: false
-    path: "{{ media_books_directory }}"
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
-  - name: audiobooks
-    comment: Audiobooks
-    guest_ok: true
-    browseable: true
-    public: true
-    writable: false
-    path: "{{ media_audiobooks_directory }}"
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
-  - name: magazines
-    comment: Magazines
-    guest_ok: true
-    browseable: true
-    public: true
-    writable: false
-    path: "{{ media_magazines_directory }}"
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
-  - name: comics
-    comment: Comics
-    guest_ok: true
-    browseable: true
-    public: true
-    writable: false
-    path: "{{ media_comics_directory }}"
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
   - name: dump
     comment: File dump
     guest_ok: true
