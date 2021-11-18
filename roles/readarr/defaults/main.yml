@@ -1,9 +1,9 @@
 ---
 # defaults file for readarr
 
-readarr_project_name: readarr
+readarr_project_name: "{{ media_project_name }}"
 readarr_container_name: readarr
-readarr_container_image: "hotio/readarr:nightly"
+readarr_container_image: "ghcr.io/hotio/readarr:nightly"
 readarr_restart_policy: unless-stopped
 readarr_traefik_rule: "Host(`readarr.{{ domain }}`)"
 readarr_expose: "true"

@@ -1,3 +1,4 @@
 dependencies:
   - traefik
   - docker
+  - media

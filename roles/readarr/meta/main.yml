@@ -1,4 +1,5 @@
 dependencies:
+  - media
   - sabnzbd
-  - nzbhydra2
   - calibre
+  - prowlarr
