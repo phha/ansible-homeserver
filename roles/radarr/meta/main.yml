@@ -1,5 +1,5 @@
 dependencies:
+  - media
   - sabnzbd
-  - nzbhydra2
   - traefik
-  - docker
+  - prowlarr
