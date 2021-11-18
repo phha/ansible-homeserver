@@ -133,6 +133,8 @@ unmanic_enabled: true
 
 # jellyfin
 jellyfin_enabled: true
+jellyfin_devices:
+  - /dev/dri:/dev/dri
 
 # influxdb
 influxdb_enabled: true
@@ -217,8 +219,8 @@ samba_shares:
     public: true
     writable: false
     path: "{{ media_directory }}/media"
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
+    owner: "{{ media_user.user }}"
+    group: "{{ media_user.gid }}"
   - name: recordings
     comment: TV recordings
     guest_ok: true

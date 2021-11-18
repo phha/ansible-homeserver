@@ -5,17 +5,13 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
   loop:
     - "{{ jellyfin_runtime_directory }}/cache"
     - "{{ jellyfin_runtime_directory }}/log"
-    - "{{ jellyfin_runtime_directory }}/metadata"
-    - "{{ jellyfin_runtime_directory }}/transcoding-temp"
-    - "{{ jellyfin_runtime_directory }}/transcodes"
+    - "{{ jellyfin_runtime_directory }}/data"
     - "{{ jellyfin_data_directory }}"
-    - "{{ media_movies_directory }}"
-    - "{{ media_series_directory }}"
 
 - name: compose
   docker_compose:
@@ -28,6 +24,8 @@
           external: true
         mail:
           external: true
+        media:
+          external: true
       services:
         jellyfin:
           container_name: "{{ jellyfin_container_name }}"
@@ -35,18 +33,16 @@
           restart: "{{ jellyfin_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ media_uid }}"
-            - "PGID={{ media_gid }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
           volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - "{{ jellyfin_runtime_directory }}/cache:/cache"
-            - "{{ jellyfin_runtime_directory }}/log:/config/log"
-            - "{{ jellyfin_runtime_directory }}/metadata:/config/metadata"
-            - "{{ jellyfin_runtime_directory }}/transcoding-temp:/config/tanscoding-temp"
-            - "{{ jellyfin_runtime_directory }}/transcodes:/config/transcodes"
             - "{{ jellyfin_data_directory }}:/config"
-            - "{{ media_movies_directory }}:/mnt/library/Movies:ro"
-            - "{{ media_series_directory }}:/mnt/library/Series:ro"
+            - "{{ media_directory }}/media:/data/media"
+            - "{{ jellyfin_runtime_directory }}/cache:/config/cache"
+            -  "{{ jellyfin_runtime_directory }}/log:/config/log"
+            - "{{ jellyfin_runtime_directory }}/data:/config/data"
+          devices: "{{ jellyfin_devices }}"
           labels:
             - "traefik.enable={{ jellyfin_expose }}"
             - "traefik.http.routers.jellyfin.tls=true"
@@ -56,3 +52,4 @@
           networks:
             - traefik_public
             - mail
+            - media
