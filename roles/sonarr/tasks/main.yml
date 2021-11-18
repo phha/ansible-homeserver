@@ -17,6 +17,8 @@
           external: true
         mail:
           external: true
+        media:
+          external: true
       services:
         sonarr:
           container_name: "{{ sonarr_container_name }}"
@@ -24,13 +26,13 @@
           restart: "{{ sonarr_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ media_uid }}"
-            - "PGID={{ media_gid }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
           volumes:
             - "{{ sonarr_data_directory }}:/config"
-            - "{{ media_series_directory }}:/series"
+            - "{{ media_directory }}:/data"
             - "{{ shared_directory }}:/shared:ro"
-            - "{{ media_download_directory }}/complete/dronetv:/download"
           labels:
             - "traefik.enable={{ sonarr_expose }}"
             - "traefik.http.routers.sonarr.tls=true"
@@ -41,3 +43,4 @@
           networks:
             - traefik_public
             - mail
+            - media

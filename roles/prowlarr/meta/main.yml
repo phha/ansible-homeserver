@@ -1,4 +1,3 @@
 dependencies:
-  - media
   - traefik
   - mail

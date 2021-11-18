@@ -1,0 +1,10 @@
+---
+# defaults file for prowlarr
+
+prowlarr_project_name: "{{ media_project_name }}"
+prowlarr_container_name: prowlarr
+prowlarr_container_image: "ghcr.io/hotio/prowlarr:testing"
+prowlarr_restart_policy: unless-stopped
+prowlarr_traefik_rule: "Host(`prowlarr.{{ domain }}`)"
+prowlarr_expose: "true"
+prowlarr_data_directory: "{{ base_data_directory }}/prowlarr"

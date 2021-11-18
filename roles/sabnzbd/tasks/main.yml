@@ -17,6 +17,8 @@
           external: true
         mail:
           external: true
+        media:
+          external: true
       services:
         sabnzbd:
           container_name: "{{ sabnzbd_container_name }}"
@@ -24,12 +26,12 @@
           restart: "{{ sabnzbd_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ media_uid }}"
-            - "PGID={{ media_gid }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
           volumes:
             - "{{ sabnzbd_data_directory }}:/config"
-            - "{{ media_download_directory }}:/download"
-            - "{{ media_nzb_watch_directory }}:/watch"
+            - "{{ media_directory }}/usenet:/data/usenet"
           labels:
             - "traefik.enable={{ sabnzbd_expose }}"
             - "traefik.http.routers.sabnzbd.tls=true"
@@ -39,4 +41,5 @@
             - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
           networks:
             - traefik_public
+            - media
             - mail

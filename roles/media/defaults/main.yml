@@ -1,0 +1,8 @@
+---
+# defaults file for media
+
+media_directory: /mnt/storage/media
+media_project_name: media
+media_user_name: media
+media_group_name: media
+media_umask: "002"

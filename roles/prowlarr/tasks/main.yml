@@ -1,0 +1,44 @@
+---
+# task file for prowlarr
+
+- name: data directory
+  file:
+    path: "{{ prowlarr_data_directory }}"
+    state: directory
+
+- name: compose
+  docker_compose:
+    project_name: "{{ prowlarr_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        mail:
+          external: true
+        media:
+          external: true
+      services:
+        prowlarr:
+          container_name: "{{ prowlarr_container_name }}"
+          image: "{{ prowlarr_container_image }}"
+          restart: "{{ prowlarr_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
+          volumes:
+            - "{{ prowlarr_data_directory }}:/config"
+          labels:
+            - "traefik.enable={{ prowlarr_expose }}"
+            - "traefik.http.routers.prowlarr.tls=true"
+            - "traefik.http.routers.prowlarr.rule={{ prowlarr_traefik_rule }}"
+            - "traefik.http.routers.prowlarr.middlewares=fauth@file"
+            - "traefik.http.routers.prowlarr.tls.certresolver=letsencrypt"
+            - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+          networks:
+            - traefik_public
+            - mail
+            - media

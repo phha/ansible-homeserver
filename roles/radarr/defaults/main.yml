@@ -1,9 +1,9 @@
 ---
 # defaults file for radarr
 
-radarr_project_name: radarr
+radarr_project_name: "{{ media_project_name }}"
 radarr_container_name: radarr
-radarr_container_image: "linuxserver/radarr:latest"
+radarr_container_image: "ghcr.io/hotio/radarr:latest"
 radarr_restart_policy: unless-stopped
 radarr_traefik_rule: "Host(`radarr.{{ domain }}`)"
 radarr_expose: "true"

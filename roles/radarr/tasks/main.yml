@@ -5,8 +5,8 @@
   file:
     path: "{{ radarr_data_directory }}"
     state: directory
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
 
 - name: compose
   docker_compose:
@@ -19,6 +19,8 @@
           external: true
         mail:
           external: true
+        media:
+          external: true
       services:
         radarr:
           container_name: "{{ radarr_container_name }}"
@@ -26,13 +28,13 @@
           restart: "{{ radarr_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ media_uid }}"
-            - "PGID={{ media_gid }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
           volumes:
             - "{{ radarr_data_directory }}:/config"
-            - "{{ media_movies_directory }}:/movies"
+            - "{{ media_directory }}:/data"
             - "{{ shared_directory }}:/shared:ro"
-            - "{{ media_download_directory }}/complete/movies:/download"
           labels:
             - "traefik.enable={{ radarr_expose }}"
             - "traefik.http.routers.radarr.tls=true"
@@ -43,3 +45,4 @@
           networks:
             - traefik_public
             - mail
+            - media

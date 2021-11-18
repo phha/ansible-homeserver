@@ -1,9 +1,9 @@
 ---
 # defaults file for sabnzbd
 
-sabnzbd_project_name: sabnzbd
+sabnzbd_project_name: "{{ media_project_name }}"
 sabnzbd_container_name: sabnzbd
-sabnzbd_container_image: "linuxserver/sabnzbd:latest"
+sabnzbd_container_image: "ghcr.io/hotio/sabnzbd:release"
 sabnzbd_restart_policy: unless-stopped
 sabnzbd_traefik_rule: "Host(`sabnzbd.{{ domain }}`)"
 sabnzbd_expose: "true"

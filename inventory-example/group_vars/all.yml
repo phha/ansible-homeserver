@@ -53,17 +53,7 @@ mail_relay_user: "{{ email_address }}"
 mail_relay_password: Nanny-Reassign-Snowbound-Strep
 
 # Common Media
-media_download_directory: /mnt/storage/downloads
-media_nzb_watch_directory: /mnt/storage/public/nzb
-media_series_directory: /mnt/storage/series
-media_movies_directory: /mnt/storage/movies
-media_music_directory: /mnt/storage/music
-media_books_directory: /mnt/storage/books
-media_audiobooks_directory: /mnt/storage/audiobooks
-media_magazines_directory: /mnt/storage/magazines
-media_comics_directory: /mnt/storage/comics
-media_uid: "110"
-media_gid: "1001"
+media_directory: /mnt/storage/media_data
 
 # Home Assistant
 homeassistant_enabled: true

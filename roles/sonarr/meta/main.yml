@@ -1,3 +1,5 @@
 dependencies:
+  - media
+  - mail
   - sabnzbd
-  - nzbhydra2
+  - prowlarr
