@@ -1,7 +1,7 @@
 ---
 # defaults file for calibre-web
 
-calibre_web_project_name: calibre-web
+calibre_web_project_name: "{{ media_project_name }}"
 calibre_web_container_name: calibre-web
 calibre_web_container_image: "linuxserver/calibre-web:latest"
 calibre_web_restart_policy: unless-stopped

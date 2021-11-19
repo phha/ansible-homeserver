@@ -19,7 +19,7 @@
           external: true
         mail:
           external: true
-        internal:
+        media:
           external: true
       services:
         calibre_web:
@@ -45,5 +45,5 @@
             - "traefik.http.services.calibre_web.loadbalancer.server.port=8083"
           networks:
             - traefik_public
-            - internal
+            - media
             - mail
