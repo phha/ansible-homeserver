@@ -163,7 +163,7 @@ organizr_enabled: true
 elkarbackup_enabled: true
 elkarbackup_backups_directory: /mnt/storage/elkarbackup
 elkarbackup_extra_volumes:
-  - "{{ media_directory }}/media:/sources/media/series:ro"
+  - "{{ media_directory }}/media:/sources/media:ro"
   - "{{ paperless_ng_export_directory }}:/sources/paperless:ro"
 
 # netdata
