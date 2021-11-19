@@ -1,7 +1,7 @@
 ---
 # defaults file for unmanic
 
-unmanic_project_name: unmanic
+unmanic_project_name: "{{ media_project_name }}"
 unmanic_container_name: unmanic
 unmanic_container_image: "josh5/unmanic:latest"
 unmanic_traefik_rule: "Host(`unmanic.{{ domain }}`)"
@@ -9,8 +9,3 @@ unmanic_restart_policy: unless-stopped
 unmanic_expose: "true"
 unmanic_data_directory: "{{ base_data_directory }}/unmanic"
 unmanic_runtime_directory: "{{ base_runtime_directory }}/unmanic"
-unmanic_number_of_workers: "1"
-unmanic_video_codec: "h264"
-unmanic_schedule_full_scan_mins: "240"
-unmanic_remove_subtitle_streams: "false"
-unmanic_extensions: mkv,avi,mov,ts,rmvb,mp4,mpg,mpeg,wmv

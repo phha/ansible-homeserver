@@ -5,13 +5,11 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ media_uid }}"
-    group: "{{ media_gid }}"
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
   loop:
     - "{{ unmanic_runtime_directory }}"
     - "{{ unmanic_data_directory }}"
-    - "{{ media_movies_directory }}"
-    - "{{ media_series_directory }}"
 
 - name: compose
   docker_compose:
@@ -29,18 +27,13 @@
           restart: "{{ unmanic_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ media_uid }}"
-            - "PGID={{ media_gid }}"
-            - "VIDEO_CODEC={{ unmanic_video_codec }}"
-            - "REMOVE_SUBTITLE_STREAMS={{ unmanic_remove_subtitle_streams }}"
-            - "NUMBER_OF_WORKERS={{ unmanic_number_of_workers }}"
-            - "SCHEDULE_FULL_SCAN_MINS={{ unmanic_schedule_full_scan_mins }}"
-            - "SUPPORTED_CONTAINERS={{ unmanic_extensions }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
           volumes:
             - "{{ unmanic_data_directory }}:/config"
             - "{{ unmanic_runtime_directory }}:/tmp/unmanic"
-            - "{{ media_series_directory }}:/library/series"
-            - "{{ media_movies_directory }}:/library/movies"
+            - "{{ media_directory }}/media:/data/media"
           labels:
             - "traefik.enable={{ unmanic_expose }}"
             - "traefik.http.routers.unmanic.tls=true"
