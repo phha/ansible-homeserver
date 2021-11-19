@@ -3,7 +3,7 @@
 
 ombi_project_name: "{{ media_project_name }}"
 ombi_container_name: ombi
-ombi_container_image: "linuxserver/ombi:latest"
+ombi_container_image: "ghcr.io/hotio/ombi:release"
 ombi_restart_policy: unless-stopped
 ombi_traefik_rule: "Host(`ombi.{{ domain }}`)"
 ombi_expose: "true"

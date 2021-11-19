@@ -37,7 +37,7 @@
             - "traefik.http.routers.ombi.tls=true"
             - "traefik.http.routers.ombi.rule={{ ombi_traefik_rule }}"
             - "traefik.http.routers.ombi.tls.certresolver=letsencrypt"
-            - "traefik.http.services.ombi.loadbalancer.server.port=3579"
+            - "traefik.http.services.ombi.loadbalancer.server.port=5000"
           networks:
             - traefik_public
             - media
