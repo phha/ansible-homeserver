@@ -3,7 +3,7 @@
 
 torrent_project_name: "{{ media_project_name }}"
 torrent_container_name: torrent
-torrent_container_image: "ghcr.io/hotio/rflood:release"
+torrent_container_image: "ghcr.io/hotio/qflood:release"
 torrent_restart_policy: unless-stopped
 torrent_traefik_rule: "Host(`torrent.{{ domain }}`)"
 torrent_expose: "true"
