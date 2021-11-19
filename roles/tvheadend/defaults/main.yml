@@ -1,7 +1,7 @@
 ---
 # defaults file for tvheadend
 
-tvheadend_project_name: tvheadend
+tvheadend_project_name: "{{ media_project_name }}"
 tvheadend_container_name: tvheadend
 tvheadend_container_image: "linuxserver/tvheadend:latest"
 tvheadend_restart_policy: unless-stopped

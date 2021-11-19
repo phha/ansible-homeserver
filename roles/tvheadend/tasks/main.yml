@@ -5,6 +5,8 @@
   file:
     path: "{{ item }}"
     state: directory
+    owner: "{{ media_user.uid }}"
+    group: "{{ media_user.group }}"
   loop:
     - "{{ tvheadend_config_directory }}"
     - "{{ tvheadend_recordings_directory }}"
@@ -36,8 +38,9 @@
           restart: "{{ tvheadend_restart_policy }}"
           environment:
             - "TZ={{ timezone }}"
-            - "PUID={{ tvheadend_uid }}"
-            - "PGID={{ tvheadend_gid }}"
+            - "PUID={{ media_user.uid }}"
+            - "PGID={{ media_user.group }}"
+            - "UMASK={{ media_umask }}"
             - "RUN_OPTS=--noacl"
           volumes:
             - "{{ tvheadend_config_directory }}:/config"
