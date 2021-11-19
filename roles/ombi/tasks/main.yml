@@ -19,6 +19,8 @@
           external: true
         mail:
           external: true
+        media:
+          external: true
       services:
         ombi:
           container_name: "{{ ombi_container_name }}"
@@ -38,4 +40,5 @@
             - "traefik.http.services.ombi.loadbalancer.server.port=3579"
           networks:
             - traefik_public
+            - media
             - mail

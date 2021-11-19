@@ -1,7 +1,7 @@
 ---
 # defaults file for ombi
 
-ombi_project_name: ombi
+ombi_project_name: "{{ media_project_name }}"
 ombi_container_name: ombi
 ombi_container_image: "linuxserver/ombi:latest"
 ombi_restart_policy: unless-stopped
