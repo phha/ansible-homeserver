@@ -1,7 +1,7 @@
 ---
 # defaults file for grafana
 
-grafana_project_name: grafana
+grafana_project_name: graphing
 grafana_container_name: grafana
 grafana_container_image: "grafana/grafana:latest"
 grafana_restart_policy: unless-stopped

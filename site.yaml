@@ -116,13 +116,13 @@
     - role: influxdb
       tags:
         - influxdb
-        - grahping
+        - graphing
         - smarthome
       when: (influxdb_enabled | default(False))
     - role: grafana
       tags:
         - grafana
-        - grahping
+        - graphing
         - smarthome
       when: (grafana_enabled | default(False))
     - role: organizr
