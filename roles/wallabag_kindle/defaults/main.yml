@@ -1,7 +1,7 @@
 ---
 # defaults file for wallabag_kindle
 
-wallabag_kindle_project_name: wallabag_kindle
+wallabag_kindle_project_name: wallabag
 wallabag_kindle_container_name: wallabag_kindle
 wallabag_kindle_create_db_container_name: wallabag_kindle_create_db
 wallabag_kindle_container_image: "phha/wallabag-kindle-consumer:latest"
