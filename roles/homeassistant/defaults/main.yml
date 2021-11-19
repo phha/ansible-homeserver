@@ -1,7 +1,7 @@
 ---
 # defaults file for homeassistant
 
-homeassistant_project_name: homeassistant
+homeassistant_project_name: smarthome
 homeassistant_container_name: homeassistant
 homeassistant_container_image: "homeassistant/home-assistant:latest"
 homeassistant_restart_policy: unless-stopped
