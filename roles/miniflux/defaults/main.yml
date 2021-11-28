@@ -1,0 +1,22 @@
+---
+# defaults file for miniflux
+
+miniflux_project_name: miniflux
+miniflux_network_name: miniflux
+miniflux_container_name: miniflux
+miniflux_container_image: "ghcr.io/miniflux/miniflux:latest"
+miniflux_restart_policy: unless-stopped
+miniflux_traefik_rule: "Host(`miniflux.{{ domain }}`)"
+miniflux_expose: "true"
+miniflux_admin_username: admin
+miniflux_admin_password: "{{ lookup('password', 'credentials/miniflux/admin_password length=64') }}"
+minixflux_base_url: "https://miniflux.{{ domain }}"
+minixflux_root_url: "https://miniflux.{{ domain }}"
+
+miniflux_db_directory: "{{ base_runtime_directory }}/miniflux/db"
+miniflux_postgres_container_name: miniflux_postgres
+miniflux_postgres_container_image: "postgres:13"
+miniflux_postgres_restart_policy: unless-stopped
+miniflux_postgres_db: miniflux
+miniflux_postgres_user: miniflux
+miniflux_postgres_password: "{{ lookup('password', 'credentials/miniflux/postgresql_password length=64') }}"

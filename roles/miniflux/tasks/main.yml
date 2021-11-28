@@ -1,0 +1,62 @@
+---
+# task file for miniflux
+
+- name: postgresql directory
+  file:
+    path: "{{ miniflux_db_directory }}"
+    state: directory
+    owner: "999"
+    group: "999"
+
+- name: compose
+  docker_compose:
+    project_name: "{{ miniflux_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+        miniflux:
+          driver: overlay
+          internal: true
+          name: "{{ miniflux_network_name }}"
+          attachable: false
+      services:
+        miniflux_postgres:
+          container_name: "{{ miniflux_postgres_container_name }}"
+          image: "{{ miniflux_postgres_container_image }}"
+          restart: "{{ miniflux_postgres_restart_policy }}"
+          volumes:
+            - "{{ miniflux_db_directory }}:/var/lib/postgresql/data"
+          environment:
+            - "POSTGRES_DB={{ miniflux_postgres_db }}"
+            - "POSTGRES_USER={{ miniflux_postgres_user }}"
+            - "POSTGRES_PASSWORD={{ miniflux_postgres_password }}"
+          networks:
+            - miniflux
+        miniflux:
+          container_name: "{{ miniflux_container_name }}"
+          image: "{{ miniflux_container_image }}"
+          restart: "{{ miniflux_restart_policy }}"
+          depends_on:
+            - miniflux_postgres
+          environment:
+            - "TZ={{ timezone }}"
+            - "DATABASE_URL=postgres://{{ miniflux_postgres_user }}:{{ miniflux_postgres_password }}@{{ miniflux_postgres_container_name }}/miniflux?sslmode=disable"
+            - "RUN_MIGRATIONS=1"
+            - "CREATE_ADMIN=1"
+            - "ADMIN_USERNAME={{ miniflux_admin_username }}"
+            - "ADMIN_PASSWORD={{ miniflux_admin_password }}"
+            - "BASE_URL={{ minixflux_base_url }}"
+            - "ROOT_URL={{ minixflux_root_url }}"
+          labels:
+            - "traefik.enable={{ miniflux_expose }}"
+            - "traefik.http.routers.miniflux.tls=true"
+            - "traefik.http.routers.miniflux.rule={{ miniflux_traefik_rule }}"
+            - "traefik.http.routers.miniflux.tls.certresolver=letsencrypt"
+            - "traefik.http.routers.miniflux.middlewares=frame-allow@file"
+            - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
+          networks:
+            - miniflux
+            - traefik_public
