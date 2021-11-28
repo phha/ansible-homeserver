@@ -198,6 +198,10 @@
       tags:
         - miniflux
       when: (miniflux_enabled | default(False))
+    - role: kinss
+      tags:
+        - kinss
+      when: (kinss_enabled | default(False))
     - role: mail
       tags:
         - mail

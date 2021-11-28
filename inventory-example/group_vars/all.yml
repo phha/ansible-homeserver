@@ -221,6 +221,9 @@ miniflux_enabled: true
 miniflux_admin_username: admin
 miniflux_admin_password: "{{ lookup('password', 'credentials/miniflux/admin_password length=64') }}"
 
+# kinss
+kinss_enabled: true
+
 # Samba
 samba_enabled: true
 samba_shares_root: "{{ base_directory }}/samba_shares"

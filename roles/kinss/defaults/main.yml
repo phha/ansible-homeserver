@@ -1,0 +1,10 @@
+---
+# defaults file for kinss
+
+kinss_project_name: kinss
+kinss_container_name: kinss
+kinss_container_image: "intemd/kinss:latest"
+kinss_restart_policy: unless-stopped
+kinss_traefik_rule: "Host(`kinss.{{ domain }}`)"
+kinss_expose: "true"
+kinss_data_directory: "{{ base_data_directory }}/kinss"

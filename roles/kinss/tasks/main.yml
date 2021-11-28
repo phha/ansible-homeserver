@@ -1,0 +1,27 @@
+---
+# task file for kinss
+
+- name: compose
+  docker_compose:
+    project_name: "{{ kinss_project_name }}"
+    pull: "{{ 'upgrade' in ansible_run_tags }}"
+    definition:
+      version: "3.5"
+      networks:
+        traefik_public:
+          external: true
+      services:
+        kinss:
+          container_name: "{{ kinss_container_name }}"
+          image: "{{ kinss_container_image }}"
+          restart: "{{ kinss_restart_policy }}"
+          environment:
+            - "TZ={{ timezone }}"
+          labels:
+            - "traefik.enable={{ kinss_expose }}"
+            - "traefik.http.routers.kinss.tls=true"
+            - "traefik.http.routers.kinss.rule={{ kinss_traefik_rule }}"
+            - "traefik.http.routers.kinss.tls.certresolver=letsencrypt"
+            - "traefik.http.services.kinss.loadbalancer.server.port=5000"
+          networks:
+            - traefik_public
