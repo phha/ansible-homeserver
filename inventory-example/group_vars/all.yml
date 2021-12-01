@@ -17,10 +17,10 @@ shared_directory: "{{ base_directory }}/shared"
 prune: true
 
 # Backups
-db_backups_enabled: true
+db_backups_enabled: false
 db_backups_directory: /srv/docker/backups/db
 db_backups_cron: "0 21 * * *" # UTC
-duplicati_enabled: true
+duplicati_enabled: false
 duplicati_extra_volumes:
   - "/home/myuser:/source/myuser:ro"
   - "{{ media_directory }}/media/books:/source/books:ro"
@@ -47,7 +47,7 @@ extra_routes:
     url: http://192.168.2.94:80
 
 # mail
-mail_enabled: true
+mail_enabled: false
 mail_relay_host: "[smtp.gmail.com]:587"
 mail_relay_user: "{{ email_address }}"
 mail_relay_password: Nanny-Reassign-Snowbound-Strep
@@ -56,20 +56,20 @@ mail_relay_password: Nanny-Reassign-Snowbound-Strep
 media_directory: /mnt/storage/media_data
 
 # Home Assistant
-homeassistant_enabled: true
+homeassistant_enabled: false
 
 # Node-Red
-nodered_enabled: true
+nodered_enabled: false
 
 # MQTT
-mqtt_enabled: true
+mqtt_enabled: false
 
 # Zigbee
-zigbee_enabled: true
+zigbee_enabled: false
 zigbee_device: /dev/ttyACM0
 
 # TVHeadend
-tvheadend_enabled: true
+tvheadend_enabled: false
 tvheadend_recordings_directory: /mnt/storage/recordings
 tvheadend_timeshift_directory: /mnt/storage/timeshift
 tvheadend_tvicons_directory: /mnt/storage/tvicons
@@ -77,27 +77,27 @@ tvheadend_uid: "108"
 tvheadend_gid: "112"
 
 # pihole
-pihole_enabled: true
+pihole_enabled: false
 pihole_password: Amid-Refining-Pretext-Acrobat
 pihole_extra_hosts:
   home.router: 192.168.0.1
   some-host.local: 192.168.0.2
 
 # portainer
-portainer_enabled: true
+portainer_enabled: false
 portainer_admin_password: Smooth-Pacific-Tractor-Monsoon
 
 # sonarr
-sonarr_enabled: true
+sonarr_enabled: false
 
 # lidarr
-lidarr_enabled: true
+lidarr_enabled: false
 
 # radarr
-radarr_enabled: true
+radarr_enabled: false
 
 # readarr
-readarr_enabled: true
+readarr_enabled: false
 
 # torrent
 torrent_vpn_enabled: "true"
@@ -113,24 +113,24 @@ torrent_wireguard: |
   Endpoint = xxx.x.xxx.x:51820
 
 # ombi
-ombi_enabled: true
+ombi_enabled: false
 
 # calibre_web
-calibre_web_enabled: true
+calibre_web_enabled: false
 
 # calibre
-calibre_enabled: true
+calibre_enabled: false
 
 # paperless-ng
-paperless_ng_enabled: true
+paperless_ng_enabled: false
 paperless_ng_superuser_name: admin
 paperless_ng_superuser_password: "{{ lookup('password', 'credentials/paperless_ng/superuser-password length=64') }}"
 
 # guacamole
-guacamole_enabled: true
+guacamole_enabled: false
 
 # nextcloud
-nextcloud_enabled: true
+nextcloud_enabled: false
 nextcloud_admin_user: admin
 nextcloud_admin_pass: Linked-Transform-Antitrust-Reissue
 nextcloud_storage_directory: /mnt/storage/nextcloud
@@ -142,35 +142,35 @@ nextcloud_extra_volumes:
   - "{{ shared_directory }}:/external/shared:rw"
 
 # unmanic
-unmanic_enabled: true
+unmanic_enabled: false
 
 # jellyfin
-jellyfin_enabled: true
+jellyfin_enabled: false
 jellyfin_devices:
   - /dev/dri:/dev/dri
 
 # influxdb
-influxdb_enabled: true
+influxdb_enabled: false
 
 # grafana
-grafana_enabled: true
+grafana_enabled: false
 grafana_plugins: neocat-cal-heatmap-panel,snuids-trafficlights-panel,natel-discrete-panel,natel-plotly-panel
 
 # organizr
-organizr_enabled: true
+organizr_enabled: false
 
 # elkarbackup
-elkarbackup_enabled: true
+elkarbackup_enabled: false
 elkarbackup_backups_directory: /mnt/storage/elkarbackup
 elkarbackup_extra_volumes:
   - "{{ media_directory }}/media:/sources/media:ro"
   - "{{ paperless_ng_export_directory }}:/sources/paperless:ro"
 
 # netdata
-netdata_enabled: true
+netdata_enabled: false
 
 # Gitea
-gitea_enabled: true
+gitea_enabled: false
 gitea_app_name: "Gitea: Git with a cup of tea"
 gitea_ssh_port: "1222"
 gitea_lfs: "false"
@@ -178,14 +178,14 @@ gitea_disable_registration: "true"
 gitea_require_signin: "true"
 
 # Wireguard
-wireguard_enabled: true
+wireguard_enabled: false
 wireguard_peers: "my_phone,my_notebook"
 
 # Jupyter
-jupyter_enabled: true
+jupyter_enabled: false
 
 # Diun
-diun_enabled: true
+diun_enabled: false
 # diun_notifier:
 #   telegram:
 #     token: "abcd:1234"
@@ -193,46 +193,46 @@ diun_enabled: true
 #       - "1337"
 
 # Wallabag
-wallabag_enabled: true
+wallabag_enabled: false
 wallabag_admin_password: Nucleus-Gathering-Glacier-Petted
 
 # Wallabag Kindle Consumer
-wallabag_kindle_enabled: true
+wallabag_kindle_enabled: false
 wallabag_kindle_client_id: Slept-Persuaded-Prissy-Tabasco
 wallabag_kindle_client_secret: Lurch-Imprudent-Prevalent-Bluish
 
 # Firefox
-firefox_enabled: true
+firefox_enabled: false
 
 # Joplin
-joplin_enabled: true
+joplin_enabled: false
 
 # ELK stack
-elk_enabled: true
+elk_enabled: false
 
 # piknik
-piknik_enabled: true
+piknik_enabled: false
 
 # webtop
-webtop_enabled: true
+webtop_enabled: false
 
 # miniflux
-miniflux_enabled: true
+miniflux_enabled: false
 miniflux_admin_username: admin
 miniflux_admin_password: "{{ lookup('password', 'credentials/miniflux/admin_password length=64') }}"
 
 # kinss
-kinss_enabled: true
+kinss_enabled: false
 
 # Syncthing
-syncthing_enabled: true
+syncthing_enabled: false
 syncthing_uid: "1000"
 syncthing_gid: "1000"
 syncthing_extra_volumes:
   - "/home/myuser/synced:/config/Sync"
 
 # Samba
-samba_enabled: true
+samba_enabled: false
 samba_shares_root: "{{ base_directory }}/samba_shares"
 samba_load_homes: true
 samba_netbios_name: "{{ ansible_hostname }}"
