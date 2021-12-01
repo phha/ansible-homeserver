@@ -8,6 +8,15 @@
     owner: "999"
     group: "999"
 
+- name: db backup
+  include_role:
+    name: postgresql_backup
+    public: true
+  vars:
+    postgresql_backup_user: "{{ miniflux_postgres_user }}"
+    postgresql_backup_password: "{{ miniflux_postgres_password }}"
+    postgresql_backup_database: "{{ miniflux_postgres_db }}"
+
 - name: compose
   docker_compose:
     project_name: "{{ miniflux_project_name }}"
@@ -23,7 +32,7 @@
           name: "{{ miniflux_network_name }}"
           attachable: false
       services:
-        miniflux_postgres:
+        db:
           container_name: "{{ miniflux_postgres_container_name }}"
           image: "{{ miniflux_postgres_container_image }}"
           restart: "{{ miniflux_postgres_restart_policy }}"
@@ -35,12 +44,13 @@
             - "POSTGRES_PASSWORD={{ miniflux_postgres_password }}"
           networks:
             - miniflux
+        db_backup: "{{ postgresql_backup_definition }}"
         miniflux:
           container_name: "{{ miniflux_container_name }}"
           image: "{{ miniflux_container_image }}"
           restart: "{{ miniflux_restart_policy }}"
           depends_on:
-            - miniflux_postgres
+            - db
           environment:
             - "TZ={{ timezone }}"
             - "DATABASE_URL=postgres://{{ miniflux_postgres_user }}:{{ miniflux_postgres_password }}@{{ miniflux_postgres_container_name }}/miniflux?sslmode=disable"

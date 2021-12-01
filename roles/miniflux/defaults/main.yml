@@ -14,7 +14,7 @@ minixflux_base_url: "https://miniflux.{{ domain }}"
 minixflux_root_url: "https://miniflux.{{ domain }}"
 
 miniflux_db_directory: "{{ base_runtime_directory }}/miniflux/db"
-miniflux_postgres_container_name: miniflux_postgres
+miniflux_postgres_container_name: miniflux_db
 miniflux_postgres_container_image: "postgres:13"
 miniflux_postgres_restart_policy: unless-stopped
 miniflux_postgres_db: miniflux

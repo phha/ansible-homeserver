@@ -269,4 +269,3 @@ samba_shares:
 docker_socket_path: /var/run/docker.sock
 ansible_python_interpreter: /usr/bin/python3
 docker_bridge_ip: 172.18.0.1
-mysql_backup_container_image: databack/mysql-backup:latest

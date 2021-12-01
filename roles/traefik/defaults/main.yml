@@ -12,6 +12,11 @@ boreale_container_image: "phha/boreale:latest"
 boreale_page_title: Authentication
 boreale_data_directory: "{{ base_data_directory }}/boreale"
 boreale_restart_policy: unless-stopped
+boreale_users:
+  - username: my_first_user
+    password: "{{ lookup('password', 'credentials/boreale/my_first_user_password length=24') }}"
+  - username: my_second_user
+    password: "{{ lookup('password', 'credentials/boreale/my_second_user_password length=24') }}"
 
 traefik_container_name: traefik
 traefik_container_image: "traefik:latest"

@@ -1,0 +1,7 @@
+---
+# Task file for postgresql_backup
+
+- name: backup directory
+  file:
+    path: "{{ postgresql_backup_directory }}"
+    state: directory

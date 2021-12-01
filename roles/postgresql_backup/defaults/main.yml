@@ -1,0 +1,33 @@
+---
+# Defaults file for postgresql_backup
+
+postgresql_backup_container_image: "0xff/postgres-backup:latest"
+postgresql_backup_container_name: "{{ role_name }}_db_backup"
+postgresql_backup_server: "{{ role_name }}_db"
+postgresql_backup_network_name: "{{ role_name }}"
+postgresql_backup_directory: "{{ db_backups_directory }}"
+postgresql_backup_container_restart_policy: "unless-stopped"
+postgresql_backup_cron: "{{ db_backups_cron }}"
+postgresql_backup_user: "{{ role_name }}"
+postgresql_backup_database: "{{ role_name }}"
+postgresql_backup_file_name: "{{ role_name }}.sql"
+postgresql_dump_options: "--clean --if-exists -f /pg-backups/{{ postgresql_backup_file_name }}"
+
+postgresql_backup_definition:
+  container_name: "{{ postgresql_backup_container_name }}"
+  image: "{{ postgresql_backup_container_image }}"
+  restart: "{{ postgresql_backup_container_restart_policy }}"
+  environment:
+    - "TZ={{ timezone }}"
+    - "PGHOST={{ postgresql_backup_server }}"
+    - "PGUSER={{ postgresql_backup_user }}"
+    - "PGPASSWORD={{ postgresql_backup_password }}"
+    - "PGDATABASE={{ postgresql_backup_database }}"
+    - "CRONSCHEDULE={{ postgresql_backup_cron }}"
+    - "PGDUMPOPTIONS={{ postgresql_dump_options }}"
+  user: "0"
+  volumes:
+    - "{{ postgresql_backup_directory }}:/pg-backups"
+    - "/etc/timezone:/etc/timezone:ro"
+  networks:
+    - "{{ postgresql_backup_network_name }}"
