@@ -1,7 +1,7 @@
 ---
 # Defaults file for mysql_backup
 
-mysql_backup_compose: false
+mysql_backup_compose: true
 mysql_backup_target_script: "{{ base_runtime_directory }}/common/target.sh"
 mysql_backup_container_image: "databack/mysql-backup:latest"
 mysql_backup_container_name: "{{ role_name if mysql_backup_compose else ansible_parent_role_names | first }}_db_backup"
