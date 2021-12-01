@@ -11,7 +11,7 @@ postgresql_backup_cron: "{{ db_backups_cron }}"
 postgresql_backup_user: "{{ role_name }}"
 postgresql_backup_database: "{{ role_name }}"
 postgresql_backup_file_name: "{{ role_name }}.sql"
-postgresql_dump_options: "--clean --if-exists -f /pg-backups/{{ postgresql_backup_file_name }}"
+postgresql_dump_options: "--clean --if-exists -f /pg-backups/db-backup-{{ postgresql_backup_file_name }}"
 
 postgresql_backup_definition:
   container_name: "{{ postgresql_backup_container_name }}"
