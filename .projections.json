@@ -1,6 +1,9 @@
 {
   "roles/**/tasks/*.yml": {"alternate": "roles/{dirname}/defaults/{basename}.yml"},
   "roles/**/defaults/*.yml": {"alternate": "roles/{dirname}/tasks/{basename}.yml"},
+  "roles/**/meta/*.yml": {"alternate": "roles/{dirname}/tasks/{basename}.yml"},
+  "roles/**/files/*.yml": {"alternate": "roles/{dirname}/tasks/{basename}.yml"},
+  "roles/**/defaults/*.yml": {"alternate": "roles/{dirname}/tasks/{basename}.yml"},
   "roles/*/tasks/main.yml": {"type": "tasks"},
   "roles/*/defaults/main.yml": {"type": "defaults"},
   "roles/*/meta/main.yml": {"type": "meta"},

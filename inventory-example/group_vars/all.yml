@@ -224,6 +224,13 @@ miniflux_admin_password: "{{ lookup('password', 'credentials/miniflux/admin_pass
 # kinss
 kinss_enabled: true
 
+# Syncthing
+syncthing_enabled: true
+syncthing_uid: "1000"
+syncthing_gid: "1000"
+syncthing_extra_volumes:
+  - "/home/myuser/synced:/config/Sync"
+
 # Samba
 samba_enabled: true
 samba_shares_root: "{{ base_directory }}/samba_shares"
