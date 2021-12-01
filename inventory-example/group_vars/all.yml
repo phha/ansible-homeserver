@@ -33,9 +33,9 @@ email_address: my-email@gmail.com
 duckdns_token: Improve-Craving-Clumsy-Disobey
 boreale_users:
   - username: my_first_user
-    password: Mushiness-Stylishly-Wieldable-Aftermath
+    password: "{{ lookup('password', 'credentials/boreale/my_first_user_password length=24') }}"
   - username: my_second_user
-    password: Sermon-Enrage-Overprice-Steerable
+    password: "{{ lookup('password', 'credentials/boreale/my_second_user_password length=24') }}"
 
 # Extra routes
 extra_routes:
@@ -50,7 +50,7 @@ extra_routes:
 mail_enabled: false
 mail_relay_host: "[smtp.gmail.com]:587"
 mail_relay_user: "{{ email_address }}"
-mail_relay_password: Nanny-Reassign-Snowbound-Strep
+mail_relay_password: "{{ lookup('password', 'credentials/mail/mail_relay_password length=24') }}"
 
 # Common Media
 media_directory: /mnt/storage/media_data
@@ -78,14 +78,14 @@ tvheadend_gid: "112"
 
 # pihole
 pihole_enabled: false
-pihole_password: Amid-Refining-Pretext-Acrobat
+pihole_password: "{{ lookup('password', 'credentials/pihole/admin_password length=24') }}"
 pihole_extra_hosts:
   home.router: 192.168.0.1
   some-host.local: 192.168.0.2
 
 # portainer
 portainer_enabled: false
-portainer_admin_password: Smooth-Pacific-Tractor-Monsoon
+portainer_admin_password: "{{ lookup('password', 'credentials/portainer/admin_password length=24') }}"
 
 # sonarr
 sonarr_enabled: false
@@ -132,7 +132,7 @@ guacamole_enabled: false
 # nextcloud
 nextcloud_enabled: false
 nextcloud_admin_user: admin
-nextcloud_admin_pass: Linked-Transform-Antitrust-Reissue
+nextcloud_admin_pass: "{{ lookup('password', 'credentials/nextcloud/admin_password length=24') }}"
 nextcloud_storage_directory: /mnt/storage/nextcloud
 nextcloud_extra_volumes:
   - "/some/dir:/external/Documents"
@@ -194,12 +194,12 @@ diun_enabled: false
 
 # Wallabag
 wallabag_enabled: false
-wallabag_admin_password: Nucleus-Gathering-Glacier-Petted
+wallabag_admin_password: "{{ lookup('password', 'credentials/wallabag/admin_password length=24') }}"
 
 # Wallabag Kindle Consumer
 wallabag_kindle_enabled: false
-wallabag_kindle_client_id: Slept-Persuaded-Prissy-Tabasco
-wallabag_kindle_client_secret: Lurch-Imprudent-Prevalent-Bluish
+wallabag_kindle_client_id: "{{ lookup('password', 'credentials/wallbag_kindle/client_id length=24') }}"
+wallabag_kindle_client_secret: "{{ lookup('password', 'credentials/wallbag_kindle/client_secret length=24') }}"
 
 # Firefox
 firefox_enabled: false
@@ -219,7 +219,7 @@ webtop_enabled: false
 # miniflux
 miniflux_enabled: false
 miniflux_admin_username: admin
-miniflux_admin_password: "{{ lookup('password', 'credentials/miniflux/admin_password length=64') }}"
+miniflux_admin_password: "{{ lookup('password', 'credentials/miniflux/admin_password length=24') }}"
 
 # kinss
 kinss_enabled: false
@@ -238,7 +238,7 @@ samba_load_homes: true
 samba_netbios_name: "{{ ansible_hostname }}"
 samba_users:
   - name: myuser
-    password: mypassword
+    password: "{{ lookup('password', 'credentials/samba/myuser_password length=24') }}"
 samba_shares:
   - name: media
     comment: Media
