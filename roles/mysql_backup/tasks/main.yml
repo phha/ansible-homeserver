@@ -16,6 +16,7 @@
     src: templates/mysql_backup_target.sh.j2
     dest: "{{ mysql_backup_target_script }}"
     mode: 0755
+    force: true
 
 - name: docker container
   when: mysql_backup_compose == false
