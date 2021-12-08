@@ -1,0 +1,14 @@
+---
+# defaults file for mealie
+
+mealie_project_name: mealie
+mealie_network_name: mealie
+mealie_container_name: mealie
+mealie_container_image: "hkotel/mealie:latest"
+mealie_restart_policy: unless-stopped
+mealie_traefik_rule: "Host(`mealie.{{ domain }}`)"
+mealie_expose: "true"
+mealie_data_directory: "{{ base_data_directory }}/mealie"
+mealie_uid: "999"
+mealie_gid: "999"
+mealie_recipe_public: "False"

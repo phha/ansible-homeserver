@@ -202,6 +202,10 @@
       tags:
         - kinss
       when: (kinss_enabled | default(False))
+    - role: mealie
+      tags:
+        - mealie
+      when: (mealie_enabled | default(False))
     - role: mail
       tags:
         - mail

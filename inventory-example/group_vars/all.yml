@@ -231,6 +231,9 @@ syncthing_gid: "1000"
 syncthing_extra_volumes:
   - "/home/myuser/synced:/config/Sync"
 
+# Mealie
+mealie_enabled: false
+
 # Samba
 samba_enabled: false
 samba_shares_root: "{{ base_directory }}/samba_shares"
@@ -247,8 +250,6 @@ samba_shares:
     public: true
     writable: false
     path: "{{ media_directory }}/media"
-    owner: "{{ media_user.user }}"
-    group: "{{ media_user.gid }}"
   - name: recordings
     comment: TV recordings
     guest_ok: true
@@ -256,8 +257,6 @@ samba_shares:
     public: true
     writable: false
     path: "{{ tvheadend_recordings_directory }}"
-    owner: "{{ tvheadend_uid }}"
-    group: "{{ tvheadend_gid }}"
   - name: dump
     comment: File dump
     guest_ok: true
