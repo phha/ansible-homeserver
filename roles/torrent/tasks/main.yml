@@ -26,6 +26,12 @@
     state: present
   when: torrent_disable_ipv6 == '0'
 
+- name: load ip6table_filter module on boot
+  copy:
+    content: ip6table_filter
+    dest: /etc/modules-load.d/ip6table_filter.conf
+  when: torrent_disable_ipv6 == '0'
+
 - name: compose
   docker_compose:
     project_name: "{{ torrent_project_name }}"
