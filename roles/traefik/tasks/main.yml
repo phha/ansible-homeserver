@@ -87,6 +87,8 @@
                 - "SUBDOMAINS={{ domain }}"
                 - "LOG_FILE=false"
                 - "TOKEN={{ duckdns_token }}"
+              networks:
+                - traefik_public
             boreale:
               container_name: "{{ boreale_container_name }}"
               image: "{{ boreale_container_image }}"
