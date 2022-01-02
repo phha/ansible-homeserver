@@ -3,7 +3,7 @@
 
 netdata_project_name: netdata
 netdata_container_name: netdata
-netdata_container_image: "netdata/netdata"
+netdata_container_image: "netdata/netdata:stable"
 netdata_restart_policy: unless-stopped
 netdata_traefik_rule: "Host(`netdata.{{ domain }}`)"
 netdata_expose: "true"
