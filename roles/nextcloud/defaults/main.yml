@@ -13,7 +13,7 @@ nextcloud_storage_directory: "{{ nextcloud_data_directory }}/data"
 nextcloud_mysql_root_password: "{{ lookup('password', 'credentials/nextcloud/mysql_root_password length=64') }}"
 nextcloud_mysql_password: "{{ lookup('password', 'credentials/nextcloud/mysql_password length=64') }}"
 
-nextcloud_db_container_image: mariadb:10.5
+nextcloud_db_container_image: mariadb:10
 nextcloud_db_restart_policy: unless-stopped
 
 nextcloud_redis_restart_policy: unless-stopped
