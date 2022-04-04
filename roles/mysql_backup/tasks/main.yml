@@ -18,6 +18,13 @@
     mode: 0755
     force: true
 
+- name: restore script template
+  template:
+    src: templates/restore.sh.j2
+    dest: "{{ mysql_backup_restore_script_path }}"
+    mode: 0755
+    force: true
+
 - name: docker container
   when: mysql_backup_compose == false
   docker_container:

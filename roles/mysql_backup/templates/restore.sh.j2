@@ -1,0 +1,2 @@
+#!/bin/sh
+docker run -e DB_SERVER={{ mysql_backup_server }} -e DB_USER={{ mysql_backup_user }} -e DB_PASS="{{ mysql_backup_password }}" -e DB_RESTORE_TARGET="/backup/{{ mysql_backup_file_name }}" -v "{{ mysql_backup_directory }}:/backup" --network="{{mysql_backup_network_name}}" {{ mysql_backup_container_image }}
