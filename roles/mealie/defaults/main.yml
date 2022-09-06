@@ -2,13 +2,20 @@
 # defaults file for mealie
 
 mealie_project_name: mealie
-mealie_network_name: mealie
-mealie_container_name: mealie
-mealie_container_image: "hkotel/mealie:latest"
-mealie_restart_policy: unless-stopped
+mealie_frontend_container_image: "hkotel/mealie:frontend-v1.0.0beta-4"
+mealie_api_container_image: "hkotel/mealie:api-v1.0.0beta-4"
+mealie_frontend_restart_policy: unless-stopped
+mealie_api_restart_policy: unless-stopped
 mealie_traefik_rule: "Host(`mealie.{{ domain }}`)"
 mealie_expose: "true"
 mealie_data_directory: "{{ base_data_directory }}/mealie"
 mealie_uid: "999"
 mealie_gid: "999"
 mealie_recipe_public: "False"
+mealie_smtp_from_email: "{{ email_address }}"
+mealie_smtp_from_name: "Mealie"
+mealie_smtp_host: mail
+mealie_smtp_port: "25"
+mealie_allow_signup: "false"
+mealie_base_url: "mealie.{{ domain }})"
+mealie_token_time: "720"
