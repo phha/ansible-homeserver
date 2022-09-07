@@ -40,9 +40,11 @@
             - "{{ jellyfin_data_directory }}:/config"
             - "{{ media_directory }}/media:/data/media"
             - "{{ jellyfin_runtime_directory }}/cache:/config/cache"
-            -  "{{ jellyfin_runtime_directory }}/log:/config/log"
+            - "{{ jellyfin_runtime_directory }}/log:/config/log"
             - "{{ jellyfin_runtime_directory }}/data:/config/data"
           devices: "{{ jellyfin_devices }}"
+          ports:
+            - "8096:8096"
           labels:
             - "traefik.enable={{ jellyfin_expose }}"
             - "traefik.http.routers.jellyfin.tls=true"
