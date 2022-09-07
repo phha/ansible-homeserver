@@ -7,7 +7,7 @@
     state: directory
     owner: "{{ media_user.uid }}"
     group: "{{ media_user.group }}"
-    mode: 0644
+    mode: 0755
   loop:
     - "{{ tvheadend_config_directory }}"
     - "{{ tvheadend_recordings_directory }}"
@@ -15,16 +15,22 @@
     - "{{ tvheadend_tvicons_directory }}"
 
 - name: Mobile UI
-  copy:
+  synchronize:
     src: mobile
     dest: "{{ tvheadend_base_data_directory }}"
-    force: no
+    delete: true
+    checksum: true
+    archive: false
+    recursive: true
 
 - name: TVHadmin
-  copy:
+  synchronize:
     src: TVHadmin-JS
     dest: "{{ tvheadend_base_data_directory }}"
-    force: no
+    delete: true
+    checksum: true
+    archive: false
+    recursive: true
 
 - name: compose
   docker_compose:
