@@ -16,7 +16,7 @@
     state: directory
     owner: "{{ media_user.uid }}"
     group: "{{ media_user.group }}"
-    mode: 0644
+    mode: 0755
   loop:
     - "{{ media_directory }}/media/audiobooks"
     - "{{ media_directory }}/media/books"
@@ -25,6 +25,7 @@
     - "{{ media_directory }}/media/movies"
     - "{{ media_directory }}/media/music"
     - "{{ media_directory }}/media/series"
+    - "{{ media_directory }}/media/musicvideos"
     - "{{ media_directory }}/torrent/audiobooks"
     - "{{ media_directory }}/torrent/books"
     - "{{ media_directory }}/torrent/comics"
@@ -32,6 +33,7 @@
     - "{{ media_directory }}/torrent/movies"
     - "{{ media_directory }}/torrent/music"
     - "{{ media_directory }}/torrent/series"
+    - "{{ media_directory }}/torrent/musicvideos"
     - "{{ media_directory }}/usenet/audiobooks"
     - "{{ media_directory }}/usenet/books"
     - "{{ media_directory }}/usenet/comics"
@@ -39,6 +41,7 @@
     - "{{ media_directory }}/usenet/movies"
     - "{{ media_directory }}/usenet/music"
     - "{{ media_directory }}/usenet/series"
+    - "{{ media_directory }}/usenet/musicvideos"
     - "{{ media_directory }}/usenet/incomplete"
     - "{{ media_directory }}/usenet/complete"
 
