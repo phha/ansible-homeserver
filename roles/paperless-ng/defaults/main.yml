@@ -4,7 +4,7 @@
 paperless_ng_project_name: paperless_ng
 paperless_ng_network_name: paperless_ng
 paperless_ng_container_name: paperless_ng
-paperless_ng_container_image: "jonaswinkler/paperless-ng:latest"
+paperless_ng_container_image: "ghcr.io/paperless-ngx/paperless-ngx:latest"
 paperless_ng_restart_policy: unless-stopped
 paperless_ng_traefik_rule: "Host(`paperless-ng.{{ domain }}`)"
 paperless_ng_expose: "true"
@@ -29,7 +29,7 @@ paperless_ng_superuser_password: "{{ lookup('password', 'credentials/paperless_n
 paperless_ng_superuser_mail: "{{ email_address }}"
 
 paperless_ng_redis_container_name: paperless_ng_redis
-paperless_ng_redis_container_image: "redis:6.0"
+paperless_ng_redis_container_image: "redis:7"
 paperless_ng_redis_restart_policy: unless-stopped
 
 paperless_ng_postgres_container_name: paperless_ng_postgres
