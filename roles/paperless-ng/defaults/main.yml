@@ -16,7 +16,7 @@ paperless_ng_db_directory: "{{ base_runtime_directory }}/paperless_ng/db"
 paperless_ng_ocr_language: deu
 paperless_ng_ocr_languages: deu eng
 paperless_ng_ocr_threads: "1"
-paperless_ng_allowed_hosts: "paperless-ng.{{ domain }}"
+paperless_ng_allowed_hosts: "https://paperless-ng.{{ domain }}"
 paperless_ng_filename_format: "{correspondent}/{created_year}-{created_month}-{created_day} ({asn}) {title} [{tag_list}]"
 paperless_ng_uid: "4815"
 paperless_ng_gid: "4815"
