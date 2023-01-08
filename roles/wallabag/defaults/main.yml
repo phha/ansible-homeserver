@@ -17,7 +17,7 @@ wallabag_secret: "{{ lookup('password', 'credentials/wallabag/secret length=64')
 wallabag_admin_password: "{{ lookup('password', 'credentials/wallabag/admin_password length=64') }}"
 
 wallabag_db_container_name: "{{ wallabag_container_name }}_db"
-wallabag_db_container_image: "mariadb:10"
+wallabag_db_container_image: "mariadb:10.5"
 wallabag_db_restart_policy: unless-stopped
 
 wallabag_redis_container_name: "{{ wallabag_container_name }}_redis"
