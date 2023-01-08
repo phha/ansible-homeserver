@@ -36,6 +36,10 @@ boreale_users:
     password: "{{ lookup('password', 'credentials/boreale/my_first_user_password length=24') }}"
   - username: my_second_user
     password: "{{ lookup('password', 'credentials/boreale/my_second_user_password length=24') }}"
+macvlan_subnet: 192.168.2.0/24
+macvlan_range: 192.168.2.240/28
+macvlan_gateway: 192.168.2.1
+macvlan_parent: eno1
 
 # Extra routes
 extra_routes:

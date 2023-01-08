@@ -26,6 +26,8 @@
           external: true
         media:
           external: true
+        macvlan:
+          external: true
       services:
         jellyfin:
           container_name: "{{ jellyfin_container_name }}"
@@ -55,3 +57,4 @@
             - traefik_public
             - mail
             - media
+            - "{{ macvlan_network_name }}"

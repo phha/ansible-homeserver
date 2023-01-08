@@ -15,7 +15,7 @@
 
     - name: Update package cache
       apt:
-        update_cache: yes
+        update_cache: true
 
     - name: Install packages
       apt:
@@ -35,7 +35,7 @@
     - name: Start and enable docker daemon
       systemd:
         name: docker
-        enabled: yes
+        enabled: true
         state: started
 
     - name: Initialize docker swarm
@@ -59,6 +59,42 @@
         state: present
         driver: overlay
         internal: false
+
+    - name: Add host shim device
+      shell: "ip link add {{ macvlan_host_shim_name }} link eno1 type macvlan mode bridge || true"
+
+    - name: Set address of host shim device
+      shell: "ip addr add {{ macvlan_host_shim_address }}/32 dev mynet-shim || true"
+
+    - name: Bring up host shim device
+      shell: "ip link set mynet-shim up || true"
+
+    - name: Bring up host shim device
+      shell: "ip route add {{ macvlan_range }} dev {{ macvlan_host_shim_name }} || true"
+
+    - name: Create macvlan network
+      docker_network:
+        name: "{{ macvlan_network_name }}"
+        ipam_config:
+          - subnet: "{{ macvlan_subnet }}"
+            iprange: "{{ macvlan_range }}"
+            gateway: "{{ macvlan_gateway }}"
+            aux_addresses:
+              host: "{{ macvlan_host_shim_address }}"
+        attachable: true
+        state: present
+        driver: macvlan
+        driver_options:
+          parent: "{{ macvlan_parent }}"
+        internal: false
+        enable_ipv6: false
+
+    - name: Enable promiscuous mode
+      command: "ip link set {{ item }} promisc on || true"
+      loop:
+        - "{{ macvlan_parent }}"
+        # - "{{ macvlan_network_name }}"
+        # - "{{ macvlan_host_shim_name }}"
 
     - name: Update facts
       setup:

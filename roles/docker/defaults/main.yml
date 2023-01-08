@@ -5,3 +5,10 @@ linux_release: "{{ ansible_facts['distribution_release'] }}"
 internal_network_name: internal
 mail_network_name: mail
 mail_subnet: 172.16.25.0/24
+macvlan_network_name: "macvlan"
+macvlan_subnet: "192.168.2.0/24"
+macvlan_range: "192.168.2.240/28"
+macvlan_gateway: "192.168.2.1"
+macvlan_parent: "eno1"
+macvlan_host_shim_address: "192.168.2.249"
+macvlan_host_shim_name: docker-shim
