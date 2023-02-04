@@ -19,15 +19,6 @@
     pull: "{{ 'upgrade' in ansible_run_tags }}"
     definition:
       version: "3.5"
-      networks:
-        traefik_public:
-          external: true
-        mail:
-          external: true
-        media:
-          external: true
-        macvlan:
-          external: true
       services:
         jellyfin:
           container_name: "{{ jellyfin_container_name }}"
@@ -45,16 +36,12 @@
             - "{{ jellyfin_runtime_directory }}/log:/config/log"
             - "{{ jellyfin_runtime_directory }}/data:/config/data"
           devices: "{{ jellyfin_devices }}"
-          ports:
-            - "8096:8096"
           labels:
             - "traefik.enable={{ jellyfin_expose }}"
             - "traefik.http.routers.jellyfin.tls=true"
             - "traefik.http.routers.jellyfin.rule={{ jellyfin_traefik_rule }}"
             - "traefik.http.routers.jellyfin.tls.certresolver=letsencrypt"
             - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
-          networks:
-            - traefik_public
-            - mail
-            - media
-            - "{{ macvlan_network_name }}"
+          network_mode: host
+          extra_hosts:
+            "host.docker.internal": "{{ host_ip }}"
