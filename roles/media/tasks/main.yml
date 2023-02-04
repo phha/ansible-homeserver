@@ -5,7 +5,7 @@
   ansible.builtin.user:
     name: "{{ media_user_name }}"
     group: "{{ media_group_name }}"
-    create_home: no
+    create_home: false
     shell: /bin/false
     state: present
   register: media_user
@@ -16,7 +16,7 @@
     state: directory
     owner: "{{ media_user.uid }}"
     group: "{{ media_user.group }}"
-    mode: 0755
+    mode: 0775
   loop:
     - "{{ media_directory }}/media/audiobooks"
     - "{{ media_directory }}/media/books"
@@ -26,6 +26,7 @@
     - "{{ media_directory }}/media/music"
     - "{{ media_directory }}/media/series"
     - "{{ media_directory }}/media/musicvideos"
+    - "{{ media_directory }}/media/plays"
     - "{{ media_directory }}/torrent/audiobooks"
     - "{{ media_directory }}/torrent/books"
     - "{{ media_directory }}/torrent/comics"
@@ -34,6 +35,7 @@
     - "{{ media_directory }}/torrent/music"
     - "{{ media_directory }}/torrent/series"
     - "{{ media_directory }}/torrent/musicvideos"
+    - "{{ media_directory }}/torrent/plays"
     - "{{ media_directory }}/usenet/audiobooks"
     - "{{ media_directory }}/usenet/books"
     - "{{ media_directory }}/usenet/comics"
@@ -44,6 +46,7 @@
     - "{{ media_directory }}/usenet/musicvideos"
     - "{{ media_directory }}/usenet/incomplete"
     - "{{ media_directory }}/usenet/complete"
+    - "{{ media_directory }}/usenet/plays"
 
 - name: network
   community.docker.docker_network:
