@@ -89,10 +89,10 @@
         internal: false
         enable_ipv6: false
 
-    - name: Enable promiscuous mode
-      command: "ip link set {{ item }} promisc on || true"
-      loop:
-        - "{{ macvlan_parent }}"
+    # - name: Enable promiscuous mode
+    #   command: "ip link set {{ item }} promisc on || true"
+    #   loop:
+    #     - "{{ macvlan_parent }}"
         # - "{{ macvlan_network_name }}"
         # - "{{ macvlan_host_shim_name }}"
 
