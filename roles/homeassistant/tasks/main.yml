@@ -21,6 +21,7 @@
             - "TZ={{ timezone }}"
           volumes:
             - "{{ homeassistant_data_directory }}:/config"
+            - "{{ media_directory }}/media:/media:ro"
           labels:
             - "traefik.enable={{ homeassistant_expose }}"
             - "traefik.http.routers.homeassistant.tls=true"
