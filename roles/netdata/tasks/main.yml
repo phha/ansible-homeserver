@@ -5,6 +5,7 @@
   file:
     path: "{{ item }}"
     state: directory
+    mode: 775
   loop:
     - "{{ netdata_data_directory }}/etc"
     - "{{ netdata_data_directory }}/lib"
@@ -21,11 +22,6 @@
     pull: "{{ 'upgrade' in ansible_run_tags }}"
     definition:
       version: "3.5"
-      networks:
-        mail:
-          external: true
-        traefik_public:
-          external: true
       services:
         netdata:
           container_name: "{{ netdata_container_name }}"
@@ -56,6 +52,6 @@
             - "traefik.http.routers.netdata.middlewares=fauth@file"
             - "traefik.http.routers.netdata.tls.certresolver=letsencrypt"
             - "traefik.http.services.netdata.loadbalancer.server.port=19999"
-          networks:
-            - mail
-            - traefik_public
+          network_mode: host
+          extra_hosts:
+            - "host.docker.internal:{{ host_ip }}"

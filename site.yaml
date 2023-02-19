@@ -210,6 +210,9 @@
       tags:
         - mail
       when: (mail_enabled | default(False))
+    - role: traefik
+      tags:
+        - traefik
   tasks:
     - name: Prune docker stuff
       tags:
